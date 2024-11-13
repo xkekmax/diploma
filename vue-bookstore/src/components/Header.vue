@@ -1,6 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
   import Search from './SearchBar.vue'
+  defineProps({
+  onChangeSearchInput: Function
+})
 </script>
 <template>
   <header class="flex justify-between border-b border-red-200 px-16 py-12">
@@ -11,7 +14,7 @@
           <p class="text-orange-400">Магазин книг</p>
         </div>
       </div>
-      <Search />
+      <Search :onChangeSearchInput="onChangeSearchInput"/>
 
       <ul class="flex items-center gap-10">
         <li class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">

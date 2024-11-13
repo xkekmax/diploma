@@ -1,5 +1,10 @@
+<script setup>
+defineProps({
+  onChangeSearchInput: Function
+})
+</script>
 <template>
-  <form class="w-6/12">
+  <form @submit.prevent class="w-6/12">
     <label
       for="default-search"
       class="mb-2 text-sm font-medium text-gray-900 sr-only"
@@ -28,6 +33,7 @@
       </div>
 
       <input
+        @input="onChangeSearchInput"
         type="search"
         id="default-search"
         class="block w-full p-4 ps-10 text-sm text-gray-900 border border-red-200 rounded-lg focus:border-red-400 outline-none"

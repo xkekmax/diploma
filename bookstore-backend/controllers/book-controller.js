@@ -2,13 +2,50 @@ const db = require('../db')
 
 class BookController {
 
+    // async getBooks(req, res) {
+    //      try {
+    //         const books = await db.query('select code_book, book_name, surname_author, ' +
+    //              'cover_art, price from public.books ' +
+    //              'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+    //              'order by code_book asc');
+    //         res.json(books.rows);
+    //     } catch (error) {
+    //         res.status(500).json({ message: 'Error retrieving books', error });
+    //     }
+
+    // }
+
     async getBooks(req, res) {
-         try {
-            const books = await db.query('select code_book, book_name, surname_author, ' +
-                 'cover_art, price from public.books ' +
-                 'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                 'order by code_book asc');
-            res.json(books.rows);
+        try {
+            const section = req.query.section;
+            const searchQuery = req.query.title;
+            
+            if (section == 'title') {
+                // Если есть параметр section, вызываем сортировку
+                const books = await db.query('select code_book, book_name, surname_author, ' +
+                    'cover_art, price from public.books ' +
+                    'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+                    'order by code_book asc');
+                return res.json(books.rows);
+            }
+            else if (searchQuery) {
+                // Если есть параметр title, выполняем поиск
+                const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
+                    'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+                    'where book_name ILIKE $1', [`%${searchQuery}%`]);
+                return res.json(books.rows);
+            }
+            else if (section != 'title') {
+                // Если есть параметр section, вызываем сортировку
+                const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
+                    'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+                    'where id_section = $1 order by code_book asc', [section]);
+                return res.json(books.rows);
+            }
+
+
+            // Если нет ни одного из параметров
+            res.status(400).json({ message: 'Please provide a section or title to search' });
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving books', error });
         }
@@ -28,19 +65,18 @@ class BookController {
         
     }
 
-    async sortBooks(req, res) {
-        try {
-            const section = req.query.name
-            const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
-                'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                'inner join public.sections on public.sections.id_section = public.books.id_section ' +
-                'where section_name = $1 order by code_book asc', [section]);
-            res.json(books.rows);
-        } catch (error) {
-            res.status(500).json({ message: 'Error retrieving books', error });
-        }
-        
-    }
+    // async sortBooks(req, res) {
+    //     try {
+    //         const section = req.query.section
+    //         const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
+    //             'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+    //             'where id_section = $1 order by code_book asc', [section]);
+    //         res.json(books.rows);
+    //     } catch (error) {
+    //         res.status(500).json({ message: 'Error retrieving books', error });
+    //     }
+      
+    // }
 }
 
 module.exports = new BookController();
