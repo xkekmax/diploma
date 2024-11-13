@@ -19,20 +19,20 @@ class BookController {
         try {
             const section = req.query.section;
             const searchQuery = req.query.title;
+            if (searchQuery) {
+                // Если есть параметр title, выполняем поиск
+                const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
+                    'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+                    'where book_name ILIKE $1', [`%${searchQuery}%`]);
+                return res.json(books.rows);
+            }
             
-            if (section == 'title') {
+            else if (section == 'title') {
                 // Если есть параметр section, вызываем сортировку
                 const books = await db.query('select code_book, book_name, surname_author, ' +
                     'cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
                     'order by code_book asc');
-                return res.json(books.rows);
-            }
-            else if (searchQuery) {
-                // Если есть параметр title, выполняем поиск
-                const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
-                    'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                    'where book_name ILIKE $1', [`%${searchQuery}%`]);
                 return res.json(books.rows);
             }
             else if (section != 'title') {
