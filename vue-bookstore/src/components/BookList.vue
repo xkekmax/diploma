@@ -2,7 +2,7 @@
 import Book from './Book.vue'
 
 defineProps({
-  items: Array
+  items: Array,
 })
 
 const onClickAdd = () => {
@@ -14,6 +14,7 @@ const onClickAdd = () => {
   <div class="grid grid-cols-5 gap-5">
         <Book v-for="item in items"
               :key="item.code_book"
+              :code="item.code_book"
               :title="item.book_name"
               :author="item.surname_author"
               :price="item.price"

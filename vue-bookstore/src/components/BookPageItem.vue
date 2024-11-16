@@ -1,5 +1,4 @@
 <script setup>
-import Header from './Header.vue'
 
 defineProps({
   code: Number,
@@ -13,7 +12,7 @@ defineProps({
   translator: String,
   illustrator: String,
   cover: String,
-  pageCont: String,
+  pageCount: String,
   year: String,
   ISBN: String,
   section: String,
@@ -34,27 +33,16 @@ defineProps({
       <div class="flex flex-col gap-4 mb-4">
         <h2 class="text-3xl font-bold">{{ title }}</h2>
         <a class="text-gray-600 border-b border-gray-200 w-fit hover:text-red-400 transition"
-        href="#">Анджей Сапковский</a>
+        href="#">{{ author }}</a>
       </div>
 
       <div class="flex gap-20">
         <div class="flex items-top gap-12 mt-2">
-           <img src="C:\Users\Kekma\Desktop\diploma\vue-bookstore\public\booksPage\book-1.jpg" alt="Cover"
+           <img :src="imageUrl" alt="Cover"
            class="w-96">
            <div class="flex flex-col gap-2">
               <p class="font-medium">Аннотация</p>
-              <p class="text-ellipsis overflow-hidden h-36">Он уничтожает чудовищ и выручает попавших в беду… как правило, за деньги.
-              Он виртуозно владеет мечом… и никогда не помышлял о военной карьере.
-              Он защищает людей… которые его презирают, ненавидят и боятся.
-              Он странствующий рыцарь… без шпор, девиза, замка и прекрасной дамы.
-              А впрочем, прекрасная дама обязательно будет. А еще будут чары и тайны,
-              неразделенная любовь и нелегкий выбор, схватки не на жизнь, а на смерть, странствия,
-              песни и, конечно, сказки — знакомые всем с детства и разительно отличные от того,
-              к чему мы привыкли.
-              Сага А. Сапковского давно занимает почетное место в мировой традиции жанра фэнтези,
-              а Геральт стал культовым персонажем не только в мире литературы, но и в универсуме
-              компьютерных игр. Первая книга из цикла «Ведьмак» впервые выходит с иллюстрациями
-              Дениса Гордеева, созданными специально для этого издания.</p>
+              <p class="text-ellipsis overflow-hidden h-36">{{ description }}</p>
               <button class="bg-gray-100 hover:bg-gray-200 focus:outline-none rounded-lg px-4 py-2
               w-fit mt-4">
                 Перейти к описанию
@@ -69,11 +57,11 @@ defineProps({
                   <p>Год, тираж</p>
                 </div>
                 <div class="flex flex-col gap-3">
-                  <p>Сапковский с иллюстрациями</p>
-                  <p>АСТ</p>
-                  <p>Твёрдый переплёт</p>
-                  <p>320</p>
-                  <p>2022</p>
+                  <p>{{ series }}</p>
+                  <p>{{ publishing }}</p>
+                  <p>{{ cover }}</p>
+                  <p>{{ pageCount }}</p>
+                  <p>{{ year }}</p>
                 </div>
               </div>
               <a class="mt-4 hover:text-red-400 transition" href="#">Перейти к характеристикам ></a>
@@ -82,7 +70,7 @@ defineProps({
 
         <div class="flex flex-col gap-4 shadow-lg rounded-lg w-fit h-fit p-12">
           <div class="flex justify-between">
-            <h2 class="text-2xl font-bold">1 154 ₽</h2>
+            <h2 class="text-2xl font-bold">{{ price }} руб.</h2>
             <img src="C:\Users\Kekma\Desktop\diploma\vue-bookstore\public\plus.svg" alt="Plus">
           </div>
           <button class="text-white bg-red-400 hover:bg-red-500 text-xl
@@ -100,18 +88,7 @@ defineProps({
         <div class="text-2xl font-medium">
           Описание и характеристики
         </div>
-        <p class="w-3/5">Он уничтожает чудовищ и выручает попавших в беду… как правило, за деньги.
-              Он виртуозно владеет мечом… и никогда не помышлял о военной карьере.
-              Он защищает людей… которые его презирают, ненавидят и боятся.
-              Он странствующий рыцарь… без шпор, девиза, замка и прекрасной дамы.
-              А впрочем, прекрасная дама обязательно будет. А еще будут чары и тайны,
-              неразделенная любовь и нелегкий выбор, схватки не на жизнь, а на смерть, странствия,
-              песни и, конечно, сказки — знакомые всем с детства и разительно отличные от того,
-              к чему мы привыкли.
-              <br>Сага А. Сапковского давно занимает почетное место в мировой традиции жанра фэнтези,
-              а Геральт стал культовым персонажем не только в мире литературы, но и в универсуме
-              компьютерных игр. Первая книга из цикла «Ведьмак» впервые выходит с иллюстрациями
-              Дениса Гордеева, созданными специально для этого издания.</p>
+        <p class="w-3/5">{{ description }}</p>
 
         <div class="flex gap-16 mt-8">
           <div class="flex flex-col gap-3 text-gray-400">
@@ -129,18 +106,18 @@ defineProps({
             <p>Вес</p>
           </div>
           <div class="flex flex-col gap-3">
-            <p>2577371</p>
-            <p>АСТ</p>
-            <p>Сапковский с иллюстрациями</p>
-            <p>Анджей Сапковский</p>
-            <p>Вайсброт Евгений Павлович</p>
-            <p>Твёрдый переплёт</p>
-            <p>320</p>
-            <p>2022</p>
-            <p>978-5-17-102028-6</p>
-            <p>Зарубежное фэнтези</p>
-            <p>16.8 см × 24.2 см</p>
-            <p>0.63 кг</p>
+            <p>{{ ISBN }}</p>
+            <p>{{ publishing }}</p>
+            <p>{{ series }}</p>
+            <p>{{ author }}</p>
+            <p>{{ translator }}</p>
+            <p>{{ cover }}</p>
+            <p>{{ pageCount }}</p>
+            <p>{{ year }}</p>
+            <p>{{ ISBN }}</p>
+            <p>{{ section }}</p>
+            <p>{{ size }}</p>
+            <p>{{ weight }}</p>
           </div>
         </div>
       </div>

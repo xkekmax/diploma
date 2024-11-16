@@ -1,13 +1,29 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-  import Search from './SearchBar.vue'
-  defineProps({
+import Search from './SearchBar.vue'
+import { useRouter, useRoute } from 'vue-router';
+
+defineProps({
   onChangeSearchInput: Function
 })
+
+const router = useRouter();
+const route = useRoute();
+
+const goToHomePage = () => {
+  // Проверяем, находимся ли мы уже на HomePage
+  if (route.name === 'HomePage') {
+    // Если да, то перезагружаем страницу
+    window.location.reload();
+  } else {
+    // Если нет, то переходим на HomePage
+    router.push({ name: 'HomePage' });
+  }
+}
 </script>
 <template>
   <header class="flex justify-between border-b border-red-200 px-16 py-12">
-      <div class="flex items-center cursor-pointer gap-4">
+      <div @click="goToHomePage" class="flex items-center cursor-pointer gap-4">
         <img src="/logo.png" alt="Logo" class="w-14" />
         <div>
           <h2 class="text-xl font-bold uppercase text-orange-900">Witch books</h2>

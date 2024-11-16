@@ -41,9 +41,18 @@ class BookController {
     async getBook(req, res) {
         try {
             const id = req.params.id
-            const book = await db.query('select code_book, book_name, surname_author, ' +
-                'cover_art, price from public.books ' +
+            const book = await db.query('select code_book, book_name, surname_author, surname_translator, ' +
+                'surname_illustrator, publishing_name, series_name, cover_name, paper_name, section_name, page_count, ' +
+                'EXTRACT(YEAR FROM year_of_publication) AS year_of_publication, book_size, ' +
+                'book_weight, "ISBN", cover_art, price, description from public.books ' +
                 'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+                'inner join public.translators on public.translators.id_translator = public.books.id_translator ' +
+                'inner join public.illustrators on public.illustrators.id_illustrator = public.books.id_illustrator ' +
+                'inner join public.publishing on public.publishing.id_publishing = public.books.id_publishing ' +
+                'inner join public.series on public.series.id_series = public.books.id_series ' +
+                'inner join public.covers on public.covers.id_cover = public.books.id_cover ' +
+                'inner join public.type_of_paper on public.type_of_paper.id_paper = public.books.id_paper ' +
+                'inner join public.sections on public.sections.id_section = public.books.id_section ' +
                 'where code_book = $1 order by code_book asc', [id]);
             res.json(book.rows[0]);
         } catch (error) {
