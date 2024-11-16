@@ -6,6 +6,8 @@ import Header from './components/Header.vue'
 import BookList from './components/BookList.vue'
 import Drawer from './components/Drawer.vue'
 
+import BookPage from './components/BookPage.vue'
+
 const items = ref([]);
 
 const filters = reactive({
@@ -13,13 +15,13 @@ const filters = reactive({
   searchQuerry: '',
 })
 
-const onChangeSelect = (event) => {
-  filters.sortBy = event.target.value;
-}
+// const onChangeSelect = (event) => {
+//   filters.sortBy = event.target.value;
+// }
 
-const onChangeSearchInput = (event) => {
-  filters.searchQuerry = event.target.value;
-}
+// const onChangeSearchInput = (event) => {
+//   filters.searchQuerry = event.target.value;
+// }
 
 const fetchItems = async () => {
   try {
@@ -52,7 +54,8 @@ watch(filters, fetchItems);
 <template>
   <!-- <Drawer/> -->
 
-  <div class="bg-white w-4/5 m-auto rounded-2xl shadow-xl mt-14">
+  <BookPage/>
+  <!-- <div class="bg-white w-4/5 m-auto rounded-2xl shadow-xl mt-14">
     <Header :onChangeSearchInput="onChangeSearchInput"/>
 
     <div class="p-14">
@@ -70,7 +73,8 @@ watch(filters, fetchItems);
       </div>
 
     </div>
-  </div>
+  </div> -->
+
 </template>
 
 <style scoped></style>
