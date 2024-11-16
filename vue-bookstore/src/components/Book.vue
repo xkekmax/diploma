@@ -5,6 +5,7 @@ defineProps({
   author: String,
   imageUrl: String,
   price: Number,
+
   isFavorite: Boolean,
   isAdded: Boolean,
   onClickAdd: Function,
@@ -13,7 +14,8 @@ defineProps({
 </script>
 
 <template>
-  <div class="relative bg-white border border-red-100 rounded-r-lg p-8 cursor-pointer transition hover:-translate-y-2 hover:shadow-xl">
+
+  <RouterLink to="/book" class="relative bg-white border border-red-100 rounded-r-lg p-8 cursor-pointer transition hover:-translate-y-2 hover:shadow-xl">
         <img @click="onClickFaivorite" :src="isFavorite ? '/like-4.svg' : '/like-3.svg'" alt="Plus"/>
         <img :src="imageUrl" alt="Book" class="mx-auto"/>
 
@@ -26,5 +28,5 @@ defineProps({
 
           <img @click="onClickAdd" :src="!isAdded ? '/plus.svg' : '/checked.svg'" alt="Plus" />
         </div>
-      </div>
+      </RouterLink>
 </template>

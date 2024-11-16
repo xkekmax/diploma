@@ -2,19 +2,6 @@ const db = require('../db')
 
 class BookController {
 
-    // async getBooks(req, res) {
-    //      try {
-    //         const books = await db.query('select code_book, book_name, surname_author, ' +
-    //              'cover_art, price from public.books ' +
-    //              'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-    //              'order by code_book asc');
-    //         res.json(books.rows);
-    //     } catch (error) {
-    //         res.status(500).json({ message: 'Error retrieving books', error });
-    //     }
-
-    // }
-
     async getBooks(req, res) {
         try {
             const section = req.query.section;
@@ -64,19 +51,6 @@ class BookController {
         }
         
     }
-
-    // async sortBooks(req, res) {
-    //     try {
-    //         const section = req.query.section
-    //         const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
-    //             'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-    //             'where id_section = $1 order by code_book asc', [section]);
-    //         res.json(books.rows);
-    //     } catch (error) {
-    //         res.status(500).json({ message: 'Error retrieving books', error });
-    //     }
-      
-    // }
 }
 
 module.exports = new BookController();
