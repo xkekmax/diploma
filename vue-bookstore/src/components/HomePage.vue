@@ -2,9 +2,9 @@
 import { onMounted, ref, watch, reactive, provide } from 'vue';
 import axios from 'axios';
 
+import Drawer from './Drawer.vue';
 import Header from './Header.vue'
 import BookList from './BookList.vue'
-// import Drawer from './Drawer.vue'
 
 const items = ref([]);
 
@@ -107,7 +107,7 @@ provide('onChangeSearchInput', onChangeSearchInput);
 
   <div class="bg-white w-4/5 m-auto rounded-2xl shadow-xl mt-14">
 
-  <!-- <Drawer/> -->
+  <!-- <Drawer /> -->
 
   <Header />
 
