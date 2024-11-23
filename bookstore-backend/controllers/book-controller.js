@@ -15,7 +15,6 @@ class BookController {
             }
             
             else if (section == 'title') {
-                // Если есть параметр section, вызываем сортировку
                 const books = await db.query('select code_book, book_name, surname_author, ' +
                     'cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
@@ -30,9 +29,39 @@ class BookController {
                 return res.json(books.rows);
             }
 
-
             // Если нет ни одного из параметров
             res.status(400).json({ message: 'Please provide a section or title to search' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error retrieving books', error });
+        }
+    }
+
+    async getFavorites(req, res) {
+        try {
+            //по идее потом здесь должен передаваться id авторизованного пользователя
+            const favBooks = await db.query('SELECT * FROM public.favorites ORDER BY id_fav ASC');
+            return res.json(favBooks.rows);
+        } catch (error) {
+            res.status(500).json({ message: 'Error retrieving books', error });
+        }
+    }
+
+    async addFavorite(req, res) {
+        try {
+            const {codeBook} = req.body
+            const newFav = await db.query('INSERT INTO public.favorites(code_book) ' +
+                'VALUES ($1) RETURNING *', [codeBook]);
+            return res.json(newFav.rows[0]);
+        } catch (error) {
+            res.status(500).json({ message: 'Error retrieving books', error });
+        }
+    }
+
+    async deleteFavorite(req, res) {
+        try {
+            const id = req.params.id
+            const favBook = await db.query('DELETE FROM public.favorites WHERE id_fav = $1', [id]);
+            return res.json(favBook.rows[0]);
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving books', error });
         }
@@ -57,8 +86,7 @@ class BookController {
             res.json(book.rows[0]);
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving books', error });
-        }
-        
+        }     
     }
 }
 

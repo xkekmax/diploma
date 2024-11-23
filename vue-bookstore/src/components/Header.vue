@@ -3,9 +3,6 @@
 import Search from './SearchBar.vue'
 import { useRouter, useRoute } from 'vue-router';
 
-defineProps({
-  onChangeSearchInput: Function
-})
 
 const router = useRouter();
 const route = useRoute();
@@ -30,7 +27,7 @@ const goToHomePage = () => {
           <p class="text-orange-400">Магазин книг</p>
         </div>
       </div>
-      <Search :onChangeSearchInput="onChangeSearchInput"/>
+      <Search />
 
       <ul class="flex items-center gap-10">
         <li class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
