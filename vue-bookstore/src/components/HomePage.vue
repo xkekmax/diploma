@@ -87,6 +87,8 @@ const fetchItems = async () => {
       favoriteId: null,
       isAdded: false
     }));
+    // После загрузки книг, загружаем избранные
+    await fetchFavorites();
   } catch (err) {
     console.log(err);
   }
