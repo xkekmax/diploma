@@ -12,7 +12,7 @@ defineProps({
   translator: String,
   illustrator: String,
   cover: String,
-  pageCount: String,
+  pageCount: Number,
   year: String,
   ISBN: String,
   section: String,
@@ -71,7 +71,7 @@ defineProps({
         <div class="flex flex-col gap-4 shadow-lg rounded-lg w-fit h-fit p-12">
           <div class="flex justify-between">
             <h2 class="text-2xl font-bold">{{ price }} руб.</h2>
-            <img src="C:\Users\Kekma\Desktop\diploma\vue-bookstore\public\plus.svg" alt="Plus">
+            <img src="..\..\plus.svg" alt="Plus">
           </div>
           <button class="text-white bg-red-400 hover:bg-red-500 text-xl
             focus:outline-none font-medium rounded-lg px-8 py-2">

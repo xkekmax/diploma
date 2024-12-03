@@ -15,6 +15,7 @@ class BookController {
             }
             
             else if (section == 'title') {
+                // все книжки
                 const books = await db.query('select code_book, book_name, surname_author, ' +
                     'cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
@@ -62,6 +63,20 @@ class BookController {
             const id = req.params.id
             const favBook = await db.query('DELETE FROM public.favorites WHERE id_fav = $1', [id]);
             return res.json(favBook.rows[0]);
+        } catch (error) {
+            res.status(500).json({ message: 'Error retrieving books', error });
+        }
+    }
+
+    async getDrawer(req, res) {
+        try {
+            //по идее потом здесь должен передаваться id авторизованного пользователя
+            const drawer = await db.query('select public.books.code_book, book_name, surname_author, ' +
+                'cover_art, price from public.shopping_cart ' +
+                'inner join public.books on public.books.code_book = public.shopping_cart.code_book ' +
+                'inner join public.authors on public.authors.id_author = public.books.id_author ' +
+                'order by code_book asc');
+            return res.json(drawer.rows);
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving books', error });
         }

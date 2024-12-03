@@ -15,7 +15,6 @@ const props = defineProps({
   onClickFavorite: Function,
 })
 
-
 // Получаем экземпляр роутера
 const router = useRouter();
 

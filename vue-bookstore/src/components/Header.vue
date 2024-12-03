@@ -17,6 +17,11 @@ const goToHomePage = () => {
     router.push({ name: 'HomePage' });
   }
 }
+
+const goToDrawerPage = () => {
+  router.push({ name: 'DrawerPage' });
+}
+
 </script>
 <template>
   <header class="flex justify-between border-b border-red-200 px-16 py-12">
@@ -30,7 +35,7 @@ const goToHomePage = () => {
       <Search />
 
       <ul class="flex items-center gap-10">
-        <li class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
+        <li @click="goToDrawerPage" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
           <img src="/cart.svg" alt="Cart" />
           <b>2199 руб.</b>
         </li>

@@ -34,7 +34,6 @@ const fetchFavorites = async () => {
         isFavorite: true,
         favoriteId: favorite.id_fav,
       }
-
     });
 
   } catch (err) {
@@ -46,7 +45,6 @@ const addFavorite = async (item) => {
   try {
     if (!item.isFavorite) {
       const obj = {
-        // idFav: item.code_book,
         codeBook: item.code_book
       };
 
@@ -101,6 +99,7 @@ onMounted(async () => {
 watch(filters, fetchItems);
 
 provide('onChangeSearchInput', onChangeSearchInput);
+provide('addFavorite', addFavorite);
 
 </script>
 <template>
