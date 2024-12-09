@@ -29,7 +29,7 @@ defineProps({
 
 <template>
 
-    <div class="flex flex-col px-20 py-12">
+    <div class="flex flex-col px-10">
       <div class="flex flex-col gap-4 mb-4">
         <h2 class="text-3xl font-bold">{{ title }}</h2>
         <a class="text-gray-600 border-b border-gray-200 w-fit hover:text-red-400 transition"

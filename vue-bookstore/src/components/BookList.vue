@@ -3,13 +3,14 @@ import Book from './Book.vue'
 
 defineProps({
   items: Array,
+  isFavorites: Boolean
 })
 
 const emit = defineEmits(['addFavorite', 'addToCart'])
 </script>
 
 <template>
-  <div class="grid grid-cols-5 gap-5">
+  <div class="grid grid-cols-5 gap-5" v-auto-animate>
     <Book
       v-for="item in items"
       :key="item.code_book"
@@ -20,8 +21,8 @@ const emit = defineEmits(['addFavorite', 'addToCart'])
       :image-url="item.cover_art"
       :is-added="item.isAdded"
       :is-favorite="item.isFavorite"
-      :onClickAdd="() => emit('addToCart', item)"
-      :onClickFavorite="() => emit('addFavorite', item)"
+      :onClickAdd="isFavorites ? null : () => emit('addToCart', item)"
+      :onClickFavorite="isFavorites ? null : () => emit('addFavorite', item)"
     />
   </div>
 </template>

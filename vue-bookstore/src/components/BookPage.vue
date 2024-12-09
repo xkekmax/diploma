@@ -21,9 +21,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-white w-4/5 m-auto rounded-2xl shadow-xl pb-14">
-    <Header/>
-    <BookPageItem v-if="bookData"
+  <div v-auto-animate>
+      <BookPageItem v-if="bookData"
       :code="bookData.code_book"
       :title="bookData.book_name"
       :author="bookData.surname_author"
@@ -45,6 +44,6 @@ onMounted(async () => {
       :isAdded="bookData.isAdded"
       :onClickAdd="bookData.onClickAdd"
       :onClickFavorite="bookData.onClickFavorite" />
-  </div>
+    </div>
 </template>
 

@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomePage from './components/HomePage.vue';
 import BookPage from './components/BookPage.vue'
-import DrawerPage from "./components/DrawerPage.vue";
+import Favorites from "./pages/Favorites.vue";
+import Home from "./pages/Home.vue";
 
 export default createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/books',
-      name: 'HomePage',
-      component: HomePage,
+      name: 'Home',
+      component: Home,
       alias: '/',
       props: true
     },
@@ -20,9 +20,9 @@ export default createRouter({
       props: true
     },
     {
-      path: '/drawer',
-      name: 'DrawerPage',
-      component: DrawerPage,
+      path: '/favorites',
+      name: 'Favorites',
+      component: Favorites,
       props: true
     },
   ]
