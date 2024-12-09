@@ -3,6 +3,11 @@
 import Search from './SearchBar.vue'
 import { useRouter, useRoute } from 'vue-router';
 
+defineProps({
+  price: Number
+})
+
+const emit = defineEmits(['openDrawer']);
 
 const router = useRouter();
 const route = useRoute();
@@ -35,9 +40,9 @@ const goToDrawerPage = () => {
       <Search />
 
       <ul class="flex items-center gap-10">
-        <li @click="goToDrawerPage" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
+        <li @click="() => emit('openDrawer')" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400 w-32">
           <img src="/cart.svg" alt="Cart" />
-          <b>2199 руб.</b>
+          <b>{{ price }} руб.</b>
         </li>
 
         <li class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">

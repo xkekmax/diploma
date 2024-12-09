@@ -10,6 +10,6 @@ router.get('/favorites', BookController.getFavorites)
 router.post('/favorite', BookController.addFavorite)
 router.delete('/favorite/:id', BookController.deleteFavorite)
 
-router.get('/drawer', BookController.getDrawer)
+router.post('/drawer', BookController.createDrawer)
 
 module.exports = router

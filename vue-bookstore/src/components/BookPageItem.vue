@@ -38,7 +38,7 @@ defineProps({
 
       <div class="flex gap-20">
         <div class="flex items-top gap-12 mt-2">
-           <img :src="imageUrl" alt="Cover"
+           <img :src="imageUrl" :alt="title"
            class="w-96">
            <div class="flex flex-col gap-2">
               <p class="font-medium">Аннотация</p>

@@ -68,19 +68,42 @@ class BookController {
         }
     }
 
-    async getDrawer(req, res) {
+    async createDrawer(req, res) {
         try {
-            //по идее потом здесь должен передаваться id авторизованного пользователя
-            const drawer = await db.query('select public.books.code_book, book_name, surname_author, ' +
-                'cover_art, price from public.shopping_cart ' +
-                'inner join public.books on public.books.code_book = public.shopping_cart.code_book ' +
-                'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                'order by code_book asc');
-            return res.json(drawer.rows);
+            const { items, totalPrice } = req.body;
+    
+            // Проверка на наличие данных
+            if (!items || items.length === 0) {
+                return res.status(400).json({ message: 'Корзина пуста.' });
+            }
+    
+            // Пример сохранения заказа в БД
+            const orderResult = await db.query(
+                `INSERT INTO public.orders (total_price, order_date) 
+                 VALUES ($1, NOW()) 
+                 RETURNING id_order`,
+                [totalPrice]
+            );
+            
+            const orderId = orderResult.rows[0].id_order;
+    
+            // Сохранение товаров заказа
+            const itemQueries = items.map(item =>
+                db.query(
+                    `INSERT INTO public.order_items (id_order, code_book) 
+                     VALUES ($1, $2)`,
+                    [orderId, item.code_book]
+                )
+            );
+            await Promise.all(itemQueries);
+    
+            return res.json({ message: 'Заказ успешно создан.', orderId });
         } catch (error) {
-            res.status(500).json({ message: 'Error retrieving books', error });
+            console.error('Ошибка при создании заказа:', error);
+            res.status(500).json({ message: 'Ошибка при создании заказа', error });
         }
     }
+    
 
     async getBook(req, res) {
         try {

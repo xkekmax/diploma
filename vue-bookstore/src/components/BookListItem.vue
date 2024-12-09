@@ -1,14 +1,22 @@
 <script setup>
- import BookItem from './BookItem.vue';
+import { inject } from 'vue'
+import BookItem from './BookItem.vue'
+
+const { cart, removeFromCart } = inject('cart')
 
 
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 ">
-    <BookItem/>
-    <BookItem/>
-    <BookItem/>
-    <BookItem/>
-      </div>
+  <div class="flex flex-col gap-4">
+    <BookItem
+      v-for="item in cart"
+      :key="item.code_book"
+      :title="item.book_name"
+      :author="item.surname_author"
+      :price="item.price"
+      :image-url="item.cover_art"
+      @on-click-remove="() => removeFromCart(item)"
+    />
+  </div>
 </template>
