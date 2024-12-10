@@ -43,10 +43,10 @@ defineProps({
            <div class="flex flex-col gap-2">
               <p class="font-medium">Аннотация</p>
               <p class="text-ellipsis overflow-hidden h-36">{{ description }}</p>
-              <button class="bg-gray-100 hover:bg-gray-200 focus:outline-none rounded-lg px-4 py-2
-              w-fit mt-4">
+              <a class="bg-gray-100 hover:bg-gray-200 focus:outline-none rounded-lg px-4 py-2
+              w-fit mt-4" href="#description">
                 Перейти к описанию
-              </button>
+              </a>
 
               <div class="flex gap-10 mt-8">
                 <div class="flex flex-col gap-3 text-gray-400">
@@ -64,7 +64,7 @@ defineProps({
                   <p>{{ year }}</p>
                 </div>
               </div>
-              <a class="mt-4 hover:text-red-400 transition" href="#">Перейти к характеристикам ></a>
+              <a class="mt-4 hover:text-red-400 transition" href="#description">Перейти к характеристикам ></a>
            </div>
         </div>
 
@@ -85,7 +85,7 @@ defineProps({
       </div>
 
       <div class="flex flex-col gap-4">
-        <div class="text-2xl font-medium">
+        <div class="text-2xl font-medium" id="description">
           Описание и характеристики
         </div>
         <p class="w-3/5">{{ description }}</p>
