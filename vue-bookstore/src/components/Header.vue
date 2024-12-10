@@ -9,11 +9,6 @@ defineProps({
 
 const emit = defineEmits(['openDrawer']);
 
-
-// const goToDrawerPage = () => {
-//   router.push({ name: 'DrawerPage' });
-// }
-
 </script>
 <template>
   <header class="flex justify-between border-b border-red-200 px-16 py-12">

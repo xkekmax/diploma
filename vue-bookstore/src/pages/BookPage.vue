@@ -1,8 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import Header from './Header.vue';
-import BookPageItem from './BookPageItem.vue';
+import BookPageItem from '../components/BookPageItem.vue';
 
 const props = defineProps({
   id: String // Получаем bookCode как пропс

@@ -12,7 +12,6 @@ onMounted(async () => {
     const {data} = await axios.get('http://localhost:8080/witch/favorites');
 
     favorites.value = data
-    console.log(favorites.value)
   } catch (err) {
     console.log(err)
   }

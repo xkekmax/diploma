@@ -1,17 +1,40 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { computed } from 'vue';
+import axios from 'axios';
+import { ref, inject, computed } from 'vue';
 import BookListItem from './BookListItem.vue';
 import InfoBlock from './InfoBlock.vue';
 
-const emit = defineEmits(['closeDrawer', 'createOrder']);
-
-defineProps({
+const props = defineProps({
   price: Number,
   salePrice: Number,
-  totalPrice: Number,
-  buttonDisabled: Boolean
+  totalPrice: Number
 })
+
+const isCreating = ref(false)
+const orderId = ref(null)
+
+const { cart, closeDrawer } = inject('cart');
+
+const createOrder = async () => {
+  isCreating.value = true
+  try {
+    const {data} = await axios.post('http://localhost:8080/witch/drawer', {
+      items: cart.value,
+      totalPrice: props.totalPrice,
+    })
+
+    cart.value = []
+
+    orderId.value = data.orderId;
+    console.log(orderId.value);
+  } catch (err) {
+    console.log(err)
+  } finally {isCreating.value = false}
+}
+
+const cartIsEmpty = computed(() => cart.value.length === 0)
+const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
 
 </script>
 
@@ -20,15 +43,23 @@ defineProps({
   <div class="fixed top-0 left-0 h-full w-full bg-black z-10 opacity-70"></div>
   <div class="bg-white w-1/4 h-full fixed right-0 top-0 z-20 p-8">
     <div class="flex items-center gap-5 mb-8">
-      <img @click="() => emit('closeDrawer')" class="opacity-50 hover:opacity-100 transition cursor-pointer hover:-translate-x-1" src="/arrow.svg" alt="arrow-left"/>
+      <img @click="closeDrawer" class="opacity-50 hover:opacity-100 transition cursor-pointer hover:-translate-x-1" src="/arrow.svg" alt="arrow-left"/>
       <h2 class="text-2xl font-bold">Корзина</h2>
     </div>
 
-    <div v-if="!totalPrice" class="flex h-full items-center">
+    <div v-if="!totalPrice || orderId" class="flex h-full items-center">
       <InfoBlock
+        v-if="!totalPrice && !orderId"
         title="Корзина пустая"
         description="Добавьте хотя бы одну книгу, чтобы сделать заказ"
         image-url="/package-icon.png"
+      />
+
+      <InfoBlock
+        v-if="orderId"
+        title="Заказ оформлен!"
+        :description="`Ваш заказ №${orderId} скоро будет передан курьерской доставке!`"
+        image-url="/order-success-icon.png"
       />
     </div>
 
@@ -57,7 +88,7 @@ defineProps({
 
         <button
           :disabled="buttonDisabled"
-          @click="() => emit('createOrder')"
+          @click="createOrder"
           class="mt-4 bg-orange-300 w-full rounded-xl py-3 text-white active:bg-orange-400 transition disabled:bg-gray-300 cursor-pointer"
         >
           Оформить заказ</button>
