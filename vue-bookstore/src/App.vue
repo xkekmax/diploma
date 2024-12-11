@@ -28,6 +28,7 @@ const openDrawer = () => {
 const addToCart = (item) => {
   cart.value.push(item)
   item.isAdded = true
+  
 }
 
 const removeFromCart = (item) => {

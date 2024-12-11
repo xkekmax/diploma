@@ -1,24 +1,41 @@
 <script setup>
+import { defineProps } from 'vue';
+import { useRouter } from 'vue-router'; // Импорт useRouter
+
 const emit = defineEmits(['onClickRemove'])
 
-defineProps({
+const props = defineProps({
   code: Number,
   title: String,
   author: String,
   imageUrl: String,
   price: Number,
 })
+
+// Инициализация маршрутизатора
+const router = useRouter();
+
+const navigateToBookPage = () => {
+  if (!props.code) {
+    console.error('Error: Missing required param "code"');
+    return;
+  }
+  router.push({ name: 'BookPage', params: { id: props.code } });
+};
 </script>
 
 <template>
-  <div class="flex items-center border border-slate-200 p-5 rounded-xl gap-5">
-    <img class="w-20 h-22 cursor-pointer" :src="imageUrl" :alt="title" />
+
+<div class="flex items-center border border-slate-200 p-5 rounded-xl gap-5"
+    @click="navigateToBookPage">
+    
+    <img class="w-20 h-22 cursor-pointer" :src="props.imageUrl" :alt="props.title" />
 
     <div class="flex flex-col flex-1">
       <div class="flex justify-between mb-2">
         <div class="cursor-pointer">
-          <p>{{ title }}</p>
-          <p class="text-slate-400">{{ author }}</p>
+          <p>{{ props.title }}</p>
+          <p class="text-slate-400">{{ props.author }}</p>
         </div>
 
         <img

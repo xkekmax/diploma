@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 import axios from 'axios';
 import BookPageItem from '../components/BookPageItem.vue';
 
@@ -9,14 +9,29 @@ const props = defineProps({
 
 const bookData = ref(null);
 
+const { addToCart, removeFromCart } = inject('cart');
+
+const isAdded = ref(false);
+
+
 onMounted(async () => {
     try {
         const response = await axios.get('http://localhost:8080/witch/book/' + props.id);
         bookData.value = response.data; // Сохраняем полученные данные
+
     } catch (error) {
         console.error('Ошибка при загрузке книги:', error);
     }
 });
+
+const toggleAddToCart = () => {
+  if (isAdded.value) {
+    removeFromCart(bookData.value);
+  } else {
+    addToCart(bookData.value);
+  }
+  isAdded.value = !isAdded.value;
+};
 </script>
 
 <template>
@@ -41,7 +56,7 @@ onMounted(async () => {
       :description="bookData.description"
       :isFavorite="bookData.isFavorite"
       :isAdded="bookData.isAdded"
-      :onClickAdd="bookData.onClickAdd"
+      :onClickAdd="toggleAddToCart"
       :onClickFavorite="bookData.onClickFavorite" />
     </div>
 </template>

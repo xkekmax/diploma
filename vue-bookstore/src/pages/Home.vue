@@ -4,6 +4,7 @@ import { onMounted, ref, watch, provide, inject } from 'vue';
 import axios from 'axios';
 import BookList from '../components/BookList.vue'
 import Swiper from '@/components/Swiper.vue';
+import InfoBlock from '../components/InfoBlock.vue';
 
 const items = ref([])
 
@@ -135,6 +136,13 @@ provide('addFavorite', addFavorite);
   </div>
 
   <div class="mt-12">
+    <div v-if="items.length === 0" class="mt-40 mb-12">
+      <InfoBlock 
+      title="Таких книг нет :("
+      description="В данный момент книг этого жанра нет в системе"
+      image-url="/bookmark.png"/>
+    </div>
+    
     <BookList :items="items" @add-favorite="addFavorite" @add-to-cart="onClickPlus"/>
   </div>
 

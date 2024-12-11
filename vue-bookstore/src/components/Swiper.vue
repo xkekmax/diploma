@@ -42,8 +42,10 @@
     @swiper="onSwiper"
     class="mb-12"
   >
-    <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner.jpg"/></swiper-slide>
     <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner2.jpg"/></swiper-slide>
+    <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner.jpg"/></swiper-slide>
     <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner3.jpg"/></swiper-slide>
+    <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner4.jpg"/></swiper-slide>
+    <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner5.jpg"/></swiper-slide>
   </swiper>
 </template>

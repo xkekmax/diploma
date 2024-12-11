@@ -12,6 +12,7 @@ const { cart, removeFromCart } = inject('cart')
     <BookItem
       v-for="item in cart"
       :key="item.code_book"
+      :code="item.code_book"
       :title="item.book_name"
       :author="item.surname_author"
       :price="item.price"

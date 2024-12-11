@@ -23,7 +23,7 @@ defineProps({
   isFavorite: Boolean,
   isAdded: Boolean,
   onClickAdd: Function,
-  onClickFaivorite: Function
+  onClickFavorite: Function,
 })
 </script>
 
@@ -68,15 +68,31 @@ defineProps({
            </div>
         </div>
 
-        <div class="flex flex-col gap-4 shadow-lg rounded-lg w-fit h-fit p-12">
-          <div class="flex justify-between">
-            <h2 class="text-2xl font-bold">{{ price }} руб.</h2>
-            <img src="..\..\plus.svg" alt="Plus">
+        <div class="flex flex-col gap-4 shadow-lg rounded-lg w-fit h-fit py-10 px-12">
+          <h2 class="text-2xl font-bold">{{ price }} руб.</h2>
+          <div>
+            <div class="flex items-end">
+              <img class="w-7" src="..\..\check.svg">
+              <h2 class="ml-2 text-gray-600 ">В наличии</h2>
+            </div>
+            <div class="flex items-end">
+              <img class="w-7" src="..\..\read.svg">
+              <h2 class="ml-2 text-gray-600 ">Бонусы за покупку</h2>
+            </div>
           </div>
-          <button class="text-white bg-red-400 hover:bg-red-500 text-xl
-            focus:outline-none font-medium rounded-lg px-8 py-2">
-            Оформить
-          </button>
+          <div class="flex justify-between mt-2">
+            <button
+              @click="onClickAdd"
+              class="text-white bg-red-400 hover:bg-red-500 w-max h-max text-xl focus:outline-none font-medium rounded-lg px-12 py-2"
+              >
+              {{ isAdded ? 'Убрать' : 'Купить' }}
+            </button>
+            <img 
+              @click="onClickFavorite"
+              class="cursor-pointer mx-4" 
+              :src="isFavorite ? '/like-4.svg' : '/like-3.svg'"alt="Plus">
+          </div>
+          
         </div>
       </div>
 
