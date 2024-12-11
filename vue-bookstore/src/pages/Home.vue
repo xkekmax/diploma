@@ -3,6 +3,7 @@
 import { onMounted, ref, watch, provide, inject } from 'vue';
 import axios from 'axios';
 import BookList from '../components/BookList.vue'
+import Swiper from '@/components/Swiper.vue';
 
 const items = ref([])
 
@@ -120,6 +121,9 @@ provide('addFavorite', addFavorite);
 </script>
 
 <template>
+
+  <Swiper/>
+
   <div class="flex justify-between items-center mb-8">
       <h2 class="text-3xl font-bold text-orange-900">Все книги</h2>
       <select @change="onChangeSelect" class="py-2 px-3 border rounded-md outline-none">

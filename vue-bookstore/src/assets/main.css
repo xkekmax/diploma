@@ -6,3 +6,22 @@
 body {
     background-color: #ffe3d3;
 }
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: gray !important; 
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: darkgray !important; 
+}
+
+.swiper-pagination-bullet {
+    background-color: #ADADAD !important;
+    opacity: 1 !important;
+}
+
+.swiper-pagination-bullet-active{
+    background: #DFDFDF !important;
+}

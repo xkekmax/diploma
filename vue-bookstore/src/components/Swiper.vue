@@ -1,57 +1,49 @@
 <!-- eslint-disable vue/multi-word-component-names -->
-<template>
-  <div></div>
-  <!-- <swiper
-      :modules="modules"
-      :space-between="20"
-      :loop="true"
-      :pagination="{clickable: true}"
-      :autoplay="{
-        delay: 7000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true
-      }"
-  >
-      <swiper-slide v-for="text in swiperTextBase" :key="text.description">
-        <div>
-          <h1>{{ text.autor }}</h1>
-          <p>{{ text.description }}</p>
-        </div>
-        <img :src="text.img" alt="image"/>
-      </swiper-slide>
-  </swiper> -->
-</template>
 <script>
-// import { Swiper, SwiperSlide } from 'swiper/vue'
-// import { Autoplay, Pagination } from 'swiper'
-// import 'swiper/css'
-// import 'swiper/css/pagination'
-// import { ref } from 'vue'
+  // import Swiper core and required modules
+  import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 
-// export default {
-//   components: {Swiper, SwiperSlide},
-//   setup() {
-//     const swiperTextBase = ref([
-//       {
-//         autor: 'Пупа пупович',
-//         description:
-//           'Ехал грека через реку видит грека в реке рак сунул грека руку в реку рак за руку грека цап',
-//         img: '',
-//       },
-//       {
-//         autor: 'Лупа луповна',
-//         description:
-//           'Ехал грека через реку видит грека в реке рак сунул грека руку в реку рак за руку грека цап',
-//         img: '',
-//       },
-//       {
-//         autor: 'Пупа пупович',
-//         description:
-//           'Ехал грека через реку видит грека в реке рак сунул грека руку в реку рак за руку грека цап',
-//         img: '',
-//       },
-//     ])
-//     return { modules: [Pagination, Autoplay], swiperTextBase }
-//   },
-// }
+  // Import Swiper Vue.js components
+  import { Swiper, SwiperSlide } from 'swiper/vue';
+
+  // Import Swiper styles
+  import 'swiper/css';
+  import 'swiper/css/navigation';
+  import 'swiper/css/pagination';
+  import 'swiper/css/scrollbar';
+
+  // Import Swiper styles
+  export default {
+    components: {
+      Swiper,
+      SwiperSlide,
+    },
+    setup() {
+      const onSwiper = (swiper) => {
+        console.log(swiper);
+      };
+
+      return {
+        onSwiper,
+        modules: [Navigation, Pagination, Scrollbar, A11y],
+      };
+    },
+  };
 </script>
+
+<template>
+  <swiper
+    :modules="modules"
+    :slides-per-view="1"
+    :space-between="50"
+    navigation
+    :loop=true
+    :pagination="{ clickable: true }"
+    @swiper="onSwiper"
+    class="mb-12"
+  >
+    <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner.jpg"/></swiper-slide>
+    <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner2.jpg"/></swiper-slide>
+    <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner3.jpg"/></swiper-slide>
+  </swiper>
+</template>
