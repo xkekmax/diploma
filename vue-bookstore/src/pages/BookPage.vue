@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref, inject, computed } from 'vue';
 import axios from 'axios';
 import BookPageItem from '../components/BookPageItem.vue';
 
@@ -9,9 +9,13 @@ const props = defineProps({
 
 const bookData = ref(null);
 
-const { addToCart, removeFromCart } = inject('cart');
+// Инжектируем состояние и методы корзины
+const { cart, addToCart, removeFromCart } = inject('cart');
 
-const isAdded = ref(false);
+// Вычисляемое свойство для проверки, добавлена ли книга в корзину
+const isAdded = computed(() =>
+  cart.value.some((item) => item.code_book === bookData.value?.code_book)
+);
 
 
 onMounted(async () => {
@@ -30,7 +34,6 @@ const toggleAddToCart = () => {
   } else {
     addToCart(bookData.value);
   }
-  isAdded.value = !isAdded.value;
 };
 </script>
 
@@ -55,7 +58,7 @@ const toggleAddToCart = () => {
       :weight="bookData.book_weight"
       :description="bookData.description"
       :isFavorite="bookData.isFavorite"
-      :isAdded="bookData.isAdded"
+      :isAdded="isAdded"
       :onClickAdd="toggleAddToCart"
       :onClickFavorite="bookData.onClickFavorite" />
     </div>
