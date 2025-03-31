@@ -1,8 +1,8 @@
 <script setup>
 import { defineProps } from 'vue';
-import { useRouter } from 'vue-router'; // Импорт useRouter
+import { useRouter } from 'vue-router';
 
-const emit = defineEmits(['onClickRemove'])
+const emit = defineEmits(['onClickRemove']);
 
 const props = defineProps({
   code: Number,
@@ -10,9 +10,8 @@ const props = defineProps({
   author: String,
   imageUrl: String,
   price: Number,
-})
+});
 
-// Инициализация маршрутизатора
 const router = useRouter();
 
 const navigateToBookPage = () => {
@@ -22,13 +21,17 @@ const navigateToBookPage = () => {
   }
   router.push({ name: 'BookPage', params: { id: props.code } });
 };
+
+const handleRemoveClick = (event) => {
+  event.stopPropagation(); // Останавливаем всплытие события
+  emit('onClickRemove');
+};
 </script>
 
 <template>
+  <div class="flex items-center border border-slate-200 p-5 rounded-xl gap-5"
+      @click="navigateToBookPage">
 
-<div class="flex items-center border border-slate-200 p-5 rounded-xl gap-5"
-    @click="navigateToBookPage">
-    
     <img class="w-20 h-22 cursor-pointer" :src="props.imageUrl" :alt="props.title" />
 
     <div class="flex flex-col flex-1">
@@ -39,7 +42,7 @@ const navigateToBookPage = () => {
         </div>
 
         <img
-          @click="emit('onClickRemove')"
+          @click="handleRemoveClick"
           class="opacity-50 hover:opacity-100 transition cursor-pointer"
           src="/cancel.svg"
           alt="Close"
@@ -49,3 +52,4 @@ const navigateToBookPage = () => {
     </div>
   </div>
 </template>
+
