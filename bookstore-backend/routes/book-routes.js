@@ -1,7 +1,11 @@
 const Router = require('express')
 const router = new Router()
 const BookController = require('../controllers/book-controller')
+const UserController = require('../controllers/user-controller')
 
+
+router.post('/register', UserController.addUser)
+router.post('/autorization', UserController.autorizeUser)
 
 router.get('/books', BookController.getBooks)
 router.get('/book/:id', BookController.getBook)

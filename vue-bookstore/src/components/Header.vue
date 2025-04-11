@@ -37,7 +37,7 @@ const emit = defineEmits(['openDrawer']);
 
         <router-link to="/autorization">
           <li class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
-            <img src="/profile.svg" alt="Cart" />
+            <img src="/cat.svg" alt="Cart" />
             <span>Войти</span>
           </li>
         </router-link>

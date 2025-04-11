@@ -67,6 +67,18 @@ const addFavorite = async (item) => {
   }
 }
 
+// const fetchUser = async () => {
+//   try {
+//     const userId = localStorage.getItem('user_id'); // Берём ID из localStorage
+//     if (!userId) return;
+
+//     const { data } = await axios.get('http://localhost:8080/witch/user/' + userId);
+//     return data; // Возвращаем данные о пользователе
+//   } catch (err) {
+//     console.error('Ошибка при получении пользователя:', err);
+//   }
+// };
+
 const fetchItems = async () => {
   try {
     const params = {
@@ -137,12 +149,12 @@ provide('addFavorite', addFavorite);
 
   <div class="mt-12">
     <div v-if="items.length === 0" class="mt-40 mb-12">
-      <InfoBlock 
+      <InfoBlock
       title="Таких книг нет :("
       description="В данный момент книг этого жанра нет в системе"
       image-url="/bookmark.png"/>
     </div>
-    
+
     <BookList :items="items" @add-favorite="addFavorite" @add-to-cart="onClickPlus"/>
   </div>
 

@@ -40,11 +40,12 @@ class BookController {
     async getFavorites(req, res) {
         try {
             //по идее потом здесь должен передаваться id авторизованного пользователя
+            const idCustomer = req.query.id;
             const favBooks = await db.query('SELECT id_fav, public.favorites.code_book, book_name, surname_author, cover_art, price ' +
                 'FROM public.favorites ' +
                 'inner join public.books on public.books.code_book = public.favorites.code_book ' +
                 'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                'ORDER BY id_fav ASC ');
+                'where id_customer = $1 ORDER BY id_fav ASC', [idCustomer]);
             return res.json(favBooks.rows);
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving books', error });
@@ -108,7 +109,6 @@ class BookController {
         }
     }
     
-
     async getBook(req, res) {
         try {
             const id = req.params.id
