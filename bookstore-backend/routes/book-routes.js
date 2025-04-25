@@ -3,7 +3,7 @@ const router = new Router()
 const BookController = require('../controllers/book-controller')
 const UserController = require('../controllers/user-controller')
 
-
+router.get('/orders/:id', UserController.getUserOrders);
 router.post('/register', UserController.addUser)
 router.post('/autorization', UserController.autorizeUser)
 

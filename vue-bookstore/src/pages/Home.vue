@@ -13,13 +13,21 @@ const { cart, addToCart, removeFromCart } = inject('cart')
 const sortBy = ref('title')
 const searchQuery = inject('searchQuery')
 
+// В компоненте Home.vue добавьте функцию для сохранения корзины
+const saveCartToLocalStorage = (cart) => {
+  localStorage.setItem('cart', JSON.stringify(cart));
+};
+
+// Измените код добавления и удаления товаров в корзину
 const onClickPlus = (item) => {
   if (!item.isAdded) {
     addToCart(item);
   } else {
     removeFromCart(item);
   }
-}
+
+  saveCartToLocalStorage(cart.value);  // Сохраняем корзину в localStorage
+};
 
 const onChangeSelect = (event) => {
   sortBy.value = event.target.value;
@@ -70,19 +78,6 @@ const addFavorite = async (item) => {
   }
 };
 
-
-// const fetchUser = async () => {
-//   try {
-//     const userId = localStorage.getItem('user_id'); // Берём ID из localStorage
-//     if (!userId) return;
-
-//     const { data } = await axios.get('http://localhost:8080/witch/user/' + userId);
-//     return data; // Возвращаем данные о пользователе
-//   } catch (err) {
-//     console.error('Ошибка при получении пользователя:', err);
-//   }
-// };
-
 const fetchItems = async () => {
   try {
     const params = {
@@ -112,9 +107,10 @@ const fetchItems = async () => {
   }
 }
 
+// При авторизации восстанавливаем корзину из localStorage, если она существует
 onMounted(async () => {
   const localCart = localStorage.getItem('cart');
-  cart.value = localCart ? JSON.parse(localCart) : []
+  cart.value = localCart ? JSON.parse(localCart) : [];
 
   await fetchItems();
   await fetchFavorites();

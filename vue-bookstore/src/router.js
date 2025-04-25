@@ -32,5 +32,12 @@ export default createRouter({
       component: Autorization,
       props: true
     },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Autorization,
+      props: true
+    }
+
   ]
 })

@@ -80,39 +80,43 @@ class BookController {
 
     async createDrawer(req, res) {
         try {
-            const { items, totalPrice } = req.body;
-    
-            // Проверка на наличие данных
-            if (!items || items.length === 0) {
-                return res.status(400).json({ message: 'Корзина пуста.' });
-            }
-    
-            // Пример сохранения заказа в БД
-            const orderResult = await db.query(
-                `INSERT INTO public.orders (total_price, order_date) 
-                 VALUES ($1, NOW()) 
-                 RETURNING id_order`,
-                [totalPrice]
-            );
-            
-            const orderId = orderResult.rows[0].id_order;
-    
-            // Сохранение товаров заказа
-            const itemQueries = items.map(item =>
-                db.query(
-                    `INSERT INTO public.order_items (id_order, code_book) 
-                     VALUES ($1, $2)`,
-                    [orderId, item.code_book]
-                )
-            );
-            await Promise.all(itemQueries);
-    
-            return res.json({ message: 'Заказ успешно создан.', orderId });
+          const { items, totalPrice, id_customer } = req.body;
+      
+          if (!items || items.length === 0) {
+            return res.status(400).json({ message: 'Корзина пуста.' });
+          }
+      
+          if (!id_customer) {
+            return res.status(400).json({ message: 'Не передан идентификатор пользователя.' });
+          }
+      
+          // Сохраняем заказ в таблицу orders с привязкой к пользователю
+          const orderResult = await db.query(
+            `INSERT INTO public.orders (total_price, order_date, id_customer)
+             VALUES ($1, NOW(), $2)
+             RETURNING id_order`,
+            [totalPrice, id_customer]
+          );
+      
+          const orderId = orderResult.rows[0].id_order;
+      
+          // Добавляем книги в order_items
+          const itemQueries = items.map(item =>
+            db.query(
+              `INSERT INTO public.order_items (id_order, code_book)
+               VALUES ($1, $2)`,
+              [orderId, item.code_book]
+            )
+          );
+          await Promise.all(itemQueries);
+      
+          return res.json({ message: 'Заказ успешно создан.', orderId });
+      
         } catch (error) {
-            console.error('Ошибка при создании заказа:', error);
-            res.status(500).json({ message: 'Ошибка при создании заказа', error });
+          console.error('Ошибка при создании заказа:', error);
+          res.status(500).json({ message: 'Ошибка при создании заказа', error });
         }
-    }
+      }         
     
     async getBook(req, res) {
         try {

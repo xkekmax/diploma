@@ -19,12 +19,7 @@
       SwiperSlide,
     },
     setup() {
-      const onSwiper = (swiper) => {
-        console.log(swiper);
-      };
-
       return {
-        onSwiper,
         modules: [Navigation, Pagination, Scrollbar, A11y],
       };
     },
@@ -39,7 +34,6 @@
     navigation
     :loop=true
     :pagination="{ clickable: true }"
-    @swiper="onSwiper"
     class="mb-12"
   >
     <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner2.jpg"/></swiper-slide>

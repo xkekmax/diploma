@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import axios from 'axios';
 import { ref, inject, computed } from 'vue';
@@ -16,28 +15,39 @@ const orderId = ref(null)
 
 const { cart, closeDrawer } = inject('cart');
 
+// Проверка авторизации
+const isAuthorized = !!localStorage.getItem('user_id');
+const showAlert = ref(false);
+
 const createOrder = async () => {
-  isCreating.value = true
+  if (!isAuthorized) {
+    showAlert.value = true;  // Показать предупреждение
+    return;
+  }
+  isCreating.value = true;
   try {
-    const {data} = await axios.post('http://localhost:8080/witch/drawer', {
+    const id_customer = localStorage.getItem('user_id')
+
+    const { data } = await axios.post('http://localhost:8080/witch/drawer', {
       items: cart.value,
       totalPrice: props.totalPrice,
-    })
+      id_customer: Number(id_customer),
+    });
 
     cart.value = []
-
     orderId.value = data.orderId;
     console.log(orderId.value);
   } catch (err) {
     console.log(err)
-  } finally {isCreating.value = false}
+  } finally {
+    isCreating.value = false
+  }
 }
 
 const cartIsEmpty = computed(() => cart.value.length === 0)
 const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
 
 </script>
-
 
 <template>
   <div class="fixed top-0 left-0 h-full w-full bg-black z-10 opacity-70"></div>
@@ -84,6 +94,11 @@ const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
           <span>Итого:</span>
           <div class="flex-1 border-b border-dashed"></div>
           <b>{{ totalPrice }} руб.</b>
+        </div>
+
+        <!-- Предупреждение для неавторизованного пользователя -->
+        <div v-if="showAlert" class="text-red-500">
+          <p>Пожалуйста, авторизуйтесь или зарегистрируйтесь, чтобы оформить заказ.</p>
         </div>
 
         <button

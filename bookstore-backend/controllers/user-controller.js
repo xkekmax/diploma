@@ -75,6 +75,53 @@ class UserController {
             res.status(500).json({ message: 'Ошибка при создании пользователя', error });
         }
     }
+
+    async getUserOrders(req, res) {
+      const userId = req.params.id;
+    
+      try {
+        const query = `
+          SELECT o.id_order, o.total_price, o.order_date, 
+                 b.code_book, b.book_name, b.cover_art, b.price, 
+                 a.surname_author
+          FROM orders o
+          LEFT JOIN order_items oi ON o.id_order = oi.id_order
+          LEFT JOIN books b ON oi.code_book = b.code_book
+          LEFT JOIN authors a ON b.id_author = a.id_author
+          WHERE o.id_customer = $1
+          ORDER BY o.order_date DESC
+        `;
+        const result = await db.query(query, [userId]);
+    
+        // Группируем книги по заказам
+        const orders = result.rows.reduce((acc, row) => {
+          let order = acc.find(o => o.id_order === row.id_order);
+          if (!order) {
+            order = {
+              id_order: row.id_order,
+              total_price: row.total_price,
+              order_date: row.order_date,
+              books: []
+            };
+            acc.push(order);
+          }
+          order.books.push({
+            code_book: row.code_book,
+            book_name: row.book_name,
+            cover_art: row.cover_art,
+            price: row.price,
+            surname_author: row.surname_author
+          });
+          return acc;
+        }, []);
+    
+        res.status(200).json(orders);
+      } catch (err) {
+        console.error('Ошибка при получении заказов:', err);
+        res.status(500).json({ message: 'Ошибка при получении заказов' });
+      }
+    }    
+    
 }
 
 module.exports = new UserController();
