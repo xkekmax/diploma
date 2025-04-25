@@ -27,45 +27,49 @@ const onChangeSelect = (event) => {
 
 const fetchFavorites = async () => {
   try {
-    const { data: favorites } = await axios.get('http://localhost:8080/witch/favorites')
+    const userId = localStorage.getItem('user_id');
+    if (!userId) return;
+
+    const { data: favorites } = await axios.get(`http://localhost:8080/witch/favorites?userId=${userId}`);
+
     items.value = items.value.map(item => {
-      const favorite = favorites.find(favorite => favorite.code_book === item.code_book);
-
-      if (!favorite) { return item; }
-
-      return {
-        ...item,
-        isFavorite: true,
-        favoriteId: favorite.id_fav,
-      }
+      const favorite = favorites.find(fav => fav.code_book === item.code_book);
+      return favorite
+        ? { ...item, isFavorite: true, favoriteId: favorite.id_fav }
+        : item;
     });
-
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const addFavorite = async (item) => {
   try {
+    const idCustomer = localStorage.getItem('user_id');
+    if (!idCustomer) {
+      alert('Пользователь не авторизован');
+      return;
+    }
+
     if (!item.isFavorite) {
       const obj = {
-        codeBook: item.code_book
+        codeBook: item.code_book,
+        idCustomer
       };
 
+      const { data } = await axios.post('http://localhost:8080/witch/favorite', obj);
       item.isFavorite = true;
-      const { data } = await axios.post('http://localhost:8080/witch/favorite', obj)
       item.favoriteId = data.id_fav;
-    }
-    else {
+    } else {
+      await axios.delete('http://localhost:8080/witch/favorite/' + item.favoriteId);
       item.isFavorite = false;
-      await axios.delete('http://localhost:8080/witch/favorite/' + item.favoriteId)
       item.favoriteId = null;
     }
-
   } catch (err) {
-    console.log(err)
+    console.log('Ошибка при добавлении/удалении из избранного:', err);
   }
-}
+};
+
 
 // const fetchUser = async () => {
 //   try {

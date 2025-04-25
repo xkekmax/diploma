@@ -1,26 +1,39 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const login = ref('');
 const password = ref('');
+const router = useRouter();
+const setUserAuthorized = inject('setUserAuthorized'); // добавим это
+const setUserName = inject('setUserName');
 
 const autorizationUser = async () => {
   try {
-    const userData = {
-      login: login.value,
-      password: password.value,
-    };
-
+    const userData = { login: login.value, password: password.value };
     const response = await axios.post('http://localhost:8080/witch/autorization', userData);
-    alert('Авторизация успешна!');
-    console.log(response.data);
+    const user = response.data.user;
+
+    if (!user || !user.id_customer) {
+      alert('Неверный логин или пароль');
+      return;
+    }
+
+    localStorage.setItem('user_id', user.id_customer);
+    setUserName(user.name); // обновляем реактивно
+
+    setUserAuthorized(true);
+    console.warn('Авторизация успешна!');
+    router.push('/');
+
   } catch (error) {
     console.error('Ошибка авторизации:', error);
     alert('Ошибка авторизации, попробуйте снова.');
   }
 };
+
 </script>
 
 <template>

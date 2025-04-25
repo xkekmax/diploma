@@ -39,27 +39,32 @@ class BookController {
 
     async getFavorites(req, res) {
         try {
-            //по идее потом здесь должен передаваться id авторизованного пользователя
-            const idCustomer = req.query.id;
-            const favBooks = await db.query('SELECT id_fav, public.favorites.code_book, book_name, surname_author, cover_art, price ' +
-                'FROM public.favorites ' +
-                'inner join public.books on public.books.code_book = public.favorites.code_book ' +
-                'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                'where id_customer = $1 ORDER BY id_fav ASC', [idCustomer]);
+            const idCustomer = req.query.userId;
+            const favBooks = await db.query(
+                `SELECT id_fav, public.favorites.code_book, book_name, surname_author, cover_art, price 
+                 FROM public.favorites 
+                 INNER JOIN public.books ON public.books.code_book = public.favorites.code_book 
+                 INNER JOIN public.authors ON public.authors.id_author = public.books.id_author 
+                 WHERE id_customer = $1 
+                 ORDER BY id_fav ASC`,
+                [idCustomer]
+            );
             return res.json(favBooks.rows);
         } catch (error) {
-            res.status(500).json({ message: 'Error retrieving books', error });
+            res.status(500).json({ message: 'Error retrieving favorites', error });
         }
     }
 
     async addFavorite(req, res) {
         try {
-            const {codeBook} = req.body
-            const newFav = await db.query('INSERT INTO public.favorites(code_book) ' +
-                'VALUES ($1) RETURNING *', [codeBook]);
+            const { codeBook, idCustomer } = req.body;
+            const newFav = await db.query(
+                'INSERT INTO public.favorites(code_book, id_customer) VALUES ($1, $2) RETURNING *',
+                [codeBook, idCustomer]
+            );
             return res.json(newFav.rows[0]);
         } catch (error) {
-            res.status(500).json({ message: 'Error retrieving books', error });
+            res.status(500).json({ message: 'Error adding favorite', error });
         }
     }
 

@@ -28,7 +28,7 @@ const openDrawer = () => {
 const addToCart = (item) => {
   cart.value.push(item)
   item.isAdded = true
-  
+
 }
 
 const removeFromCart = (item) => {
@@ -55,6 +55,21 @@ const onChangeSearchInput = debounce((event) => {
   searchQuery.value = event.target.value;
 }, 500)
 
+const isAuthorized = ref(!!localStorage.getItem('user_id'));
+const setUserAuthorized = (value) => {
+  isAuthorized.value = value;
+};
+
+const userName = ref(localStorage.getItem('user_name') || '');
+const setUserName = (name) => {
+  userName.value = name;
+  localStorage.setItem('user_name', name);
+};
+
+provide('userName', userName);
+provide('setUserName', setUserName);
+provide('isAuthorized', isAuthorized);
+provide('setUserAuthorized', setUserAuthorized);
 provide('searchQuery', searchQuery)
 provide('onChangeSearchInput', onChangeSearchInput);
 

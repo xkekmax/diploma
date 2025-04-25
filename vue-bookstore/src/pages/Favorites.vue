@@ -10,13 +10,15 @@ const favorites = ref([]);
 
 onMounted(async () => {
   try {
-    const {data} = await axios.get('http://localhost:8080/witch/favorites');
+    const userId = localStorage.getItem('user_id');
+    if (!userId) return;
 
-    favorites.value = data
+    const { data } = await axios.get(`http://localhost:8080/witch/favorites?userId=${userId}`);
+    favorites.value = data;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-})
+});
 </script>
 
 <template>

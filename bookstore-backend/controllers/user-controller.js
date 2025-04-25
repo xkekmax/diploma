@@ -3,30 +3,34 @@ const db = require('../db'); // Подключение к базе данных
 class UserController {
 
     async autorizeUser(req, res) {
-        try {
-          const { login, password } = req.body;
-      
-          // SQL-запрос на поиск пользователя по логину и паролю
-          const query = `
-            SELECT * FROM public.customers 
-            WHERE login = $1 AND password = $2
-          `;
-          const values = [login, password];
-      
-          const result = await db.query(query, values);
-      
-          if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'Неверный логин или пароль' });
-          }
-      
-          const user = result.rows[0];
-          return res.status(200).json({ message: 'Авторизация успешна', user });
-        } catch (error) {
-          console.error('Ошибка при авторизации пользователя:', error);
-          res.status(500).json({ message: 'Ошибка при авторизации', error });
+      try {
+        const { login, password } = req.body;
+    
+        const query = `
+          SELECT * FROM public.customers 
+          WHERE login = $1 AND password = $2
+        `;
+        const values = [login, password];
+    
+        const result = await db.query(query, values);
+    
+        if (result.rows.length === 0) {
+          return res.status(404).json({ message: 'Неверный логин или пароль' });
         }
+    
+        const user = result.rows[0];
+        return res.status(200).json({
+          message: 'Авторизация успешна',
+          user: {
+            id_customer: user.id_customer,
+            name: user.firstname_customer // или любое другое поле для имени
+          }
+        });
+      } catch (error) {
+        console.error('Ошибка при авторизации пользователя:', error);
+        res.status(500).json({ message: 'Ошибка при авторизации', error });
       }
-      
+    }
 
     async addUser(req, res) {
         try {
