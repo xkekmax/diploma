@@ -1,14 +1,19 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 import axios from 'axios';
+import { useCartSync } from '../useCart';
 
 import BookList from '../components/BookList.vue'
 import InfoBlock from '../components/InfoBlock.vue';
 
 const favorites = ref([]);
+const { cart } = inject('cart'); // Теперь инжектим здесь!
+const { loadCartFromLocalStorage } = useCartSync(cart); // Передаём в функцию cart
 
 onMounted(async () => {
+  loadCartFromLocalStorage();
+
   try {
     const userId = localStorage.getItem('user_id');
     if (!userId) return;

@@ -1,14 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import axios from 'axios';
+import { useCartSync } from '../useCart';
+
 import Autorization from '@/components/Autorization.vue';
 import Registration from '@/components/Registration.vue';
 import InfoBlock from '@/components/InfoBlock.vue';
-import BookList from '@/components/BookList.vue'; // Импортируем компонент для отображения книг
+import BookList from '@/components/BookList.vue';
 
 const isRegistering = ref(false);
 const orders = ref([]);
 const isAuthorized = !!localStorage.getItem('user_id');
+const { cart } = inject('cart'); // Инжектим cart!
+const { loadCartFromLocalStorage } = useCartSync(cart); // Передаём cart в функцию
 
 const fetchOrders = async () => {
   const userId = localStorage.getItem('user_id');
@@ -23,6 +27,8 @@ const fetchOrders = async () => {
 };
 
 onMounted(() => {
+  loadCartFromLocalStorage();
+
   if (isAuthorized) fetchOrders();
 });
 
