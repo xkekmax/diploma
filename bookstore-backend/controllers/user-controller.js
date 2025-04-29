@@ -76,6 +76,72 @@ class UserController {
         }
     }
 
+    async getUserById(req, res) {
+      try {
+        const userId = req.params.id;
+    
+        const query = `
+          SELECT id_customer, surname_customer, firstname_customer, patronymic_customer, 
+                 date_of_birthday, login, email, phone 
+          FROM public.customers 
+          WHERE id_customer = $1
+        `;
+        const result = await db.query(query, [userId]);
+    
+        if (result.rows.length === 0) {
+          return res.status(404).json({ message: 'Пользователь не найден' });
+        }
+    
+        const user = result.rows[0];
+        res.status(200).json(user);
+      } catch (error) {
+        console.error('Ошибка при получении данных пользователя:', error);
+        res.status(500).json({ message: 'Ошибка при получении данных пользователя', error });
+      }
+    }    
+
+    async updateUser(req, res) {
+      try {
+        const userId = req.params.id;
+        const {
+          surname_customer,
+          firstname_customer,
+          patronymic_customer,
+          date_of_birthday,
+          email,
+          phone
+        } = req.body;
+    
+        const query = `
+          UPDATE public.customers 
+          SET surname_customer = $1,
+              firstname_customer = $2,
+              patronymic_customer = $3,
+              date_of_birthday = $4,
+              email = $5,
+              phone = $6
+          WHERE id_customer = $7
+          RETURNING *;
+        `;
+    
+        const values = [
+          surname_customer,
+          firstname_customer,
+          patronymic_customer || null,
+          date_of_birthday || null,
+          email,
+          phone || null,
+          userId
+        ];
+    
+        const result = await db.query(query, values);
+        res.status(200).json(result.rows[0]);
+      } catch (error) {
+        console.error('Ошибка при обновлении пользователя:', error);
+        res.status(500).json({ message: 'Ошибка при обновлении пользователя', error });
+      }
+    }    
+
     async getUserOrders(req, res) {
       const userId = req.params.id;
     

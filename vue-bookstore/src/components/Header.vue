@@ -1,9 +1,11 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import { inject, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 defineProps({ price: Number });
 const emit = defineEmits(['openDrawer']);
+const router = useRouter();
 const isAuthorized = inject('isAuthorized');
 const userName = inject('userName');
 const setUserAuthorized = inject('setUserAuthorized');
@@ -32,7 +34,12 @@ const logout = () => {
 };
 
 const editProfile = () => {
-  alert('Редактирование профиля пока не реализовано');
+  const userId = localStorage.getItem('user_id');
+  if (userId) {
+    router.push({ name: 'Profile', query: { edit: 'true' } });
+  } else {
+    alert('Пользователь не авторизован');
+  }
 };
 </script>
 

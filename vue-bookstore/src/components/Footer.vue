@@ -16,7 +16,7 @@
     <div>
       <h3 class="font-semibold">О компании</h3>
       <ul class="mt-6 space-y-2">
-        <li>О «Буквоеде»</li>
+        <li>О «WITCH BOOKS»</li>
         <li>Бонусная программа</li>
         <li>Открытые вакансии</li>
       </ul>

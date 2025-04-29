@@ -3,9 +3,13 @@ const router = new Router()
 const BookController = require('../controllers/book-controller')
 const UserController = require('../controllers/user-controller')
 
-router.get('/orders/:id', UserController.getUserOrders);
 router.post('/register', UserController.addUser)
 router.post('/autorization', UserController.autorizeUser)
+
+router.get('/user/:id', UserController.getUserById);
+router.put('/user/:id', UserController.updateUser);
+
+router.get('/orders/:id', UserController.getUserOrders);
 
 router.get('/books', BookController.getBooks)
 router.get('/book/:id', BookController.getBook)

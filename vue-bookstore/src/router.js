@@ -38,6 +38,5 @@ export default createRouter({
       component: Autorization,
       props: true
     }
-
   ]
 })

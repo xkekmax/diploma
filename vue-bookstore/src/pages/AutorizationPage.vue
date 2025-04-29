@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted, inject } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
-import { useCartSync } from '../useCart';
+import { useRoute } from 'vue-router';
 
 import Autorization from '@/components/Autorization.vue';
 import Registration from '@/components/Registration.vue';
@@ -9,10 +9,30 @@ import InfoBlock from '@/components/InfoBlock.vue';
 import BookList from '@/components/BookList.vue';
 
 const isRegistering = ref(false);
-const orders = ref([]);
 const isAuthorized = !!localStorage.getItem('user_id');
-const { cart } = inject('cart'); // Инжектим cart!
-const { loadCartFromLocalStorage } = useCartSync(cart); // Передаём cart в функцию
+const route = useRoute();
+const editMode = ref(false);
+const userData = ref(null);
+const orders = ref([]);
+
+const fetchUserData = async () => {
+  const userId = localStorage.getItem('user_id');
+  if (!userId) return;
+
+  try {
+    const { data } = await axios.get(`http://localhost:8080/witch/user/${userId}`);
+
+    // Убедитесь, что дата передается правильно
+    if (data.date_of_birthday) {
+      const date = new Date(data.date_of_birthday);
+      data.date_of_birthday = date.toISOString().slice(0, 10);
+    }
+
+    userData.value = data;
+  } catch (error) {
+    console.error('Ошибка при загрузке данных пользователя:', error);
+  }
+};
 
 const fetchOrders = async () => {
   const userId = localStorage.getItem('user_id');
@@ -26,22 +46,34 @@ const fetchOrders = async () => {
   }
 };
 
-onMounted(() => {
-  loadCartFromLocalStorage();
+const init = async () => {
+  editMode.value = route.query.edit === 'true';
+  if (editMode.value) {
+    await fetchUserData();
+  } else if (isAuthorized) {
+    await fetchOrders();
+  }
+};
 
-  if (isAuthorized) fetchOrders();
+onMounted(init);
+
+// 🟡 добавь это:
+watch(() => route.fullPath, () => {
+  init();
 });
-
-const switchToRegister = () => isRegistering.value = true;
-const switchToLogin = () => isRegistering.value = false;
 </script>
 
 <template>
   <div>
-    <Autorization v-if="!isAuthorized && !isRegistering" @goToRegister="switchToRegister" />
-    <Registration v-if="!isAuthorized && isRegistering" @goToLogin="switchToLogin" />
+    <Autorization v-if="!isAuthorized && !isRegistering && !editMode" @goToRegister="switchToRegister" />
+    <Registration
+      v-if="(isRegistering && !isAuthorized) || editMode"
+      @goToLogin="switchToLogin"
+      :user-data="userData"
+      :edit-mode="editMode"
+    />
 
-    <div v-if="isAuthorized" class="space-y-4">
+    <div v-if="isAuthorized && !editMode" class="space-y-4">
       <h2 class="text-3xl font-bold text-orange-900 mb-8">Мои заказы</h2>
 
       <div v-if="orders.length === 0">
@@ -55,7 +87,9 @@ const switchToLogin = () => isRegistering.value = false;
       <div v-else>
         <div v-for="order in orders" :key="order.id_order" class="border-b pb-4 mb-4">
           <div v-if="order.books.length > 0">
-            <h3 class="my-4 text-xl font-semibold text-red-400">Заказ №{{ order.id_order }} на: {{ new Date(order.order_date).toLocaleDateString() }}</h3>
+            <h3 class="my-4 text-xl font-semibold text-red-400">
+              Заказ №{{ order.id_order }} на: {{ new Date(order.order_date).toLocaleDateString() }}
+            </h3>
             <BookList :items="order.books" />
           </div>
         </div>
