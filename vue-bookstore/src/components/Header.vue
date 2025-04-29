@@ -64,15 +64,17 @@ const editProfile = () => {
 
       <li
         v-if="isAuthorized"
-        class="relative flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400"
+        class="relative flex items-center cursor-pointer gap-3 text-gray-500"
         @mouseenter="onMouseEnter"
         @mouseleave="onMouseLeave"
       >
-        <div class="flex items-center gap-3">
+        <!-- перемещаем hover сюда -->
+        <div class="flex items-center gap-3 hover:text-red-400">
           <img src="/cat.svg" alt="Profile" />
           <span>{{ userName }}</span>
         </div>
 
+        <!-- выпадающий список не унаследует hover -->
         <ul
           v-show="showDropdown"
           class="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-md z-10 w-40 transition-opacity duration-200"
