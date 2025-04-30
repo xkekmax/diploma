@@ -82,7 +82,7 @@ class UserController {
     
         const query = `
           SELECT id_customer, surname_customer, firstname_customer, patronymic_customer, 
-                 date_of_birthday, login, email, phone 
+          TO_CHAR(date_of_birthday, 'YYYY-MM-DD') as date_of_birthday, login, email, phone 
           FROM public.customers 
           WHERE id_customer = $1
         `;

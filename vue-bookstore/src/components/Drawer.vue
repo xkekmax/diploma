@@ -74,7 +74,9 @@ const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
     </div>
 
     <div v-else>
-      <BookListItem/>
+      <div class="overflow-y-auto max-h-[60vh] pr-2">
+        <BookListItem/>
+      </div>
 
       <div class="flex flex-col gap-4 mt-8">
 

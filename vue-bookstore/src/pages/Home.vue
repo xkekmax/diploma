@@ -126,9 +126,9 @@ watch([sortBy, searchQuery], fetchItems)
 watch(cart, () => {
   items.value = items.value.map((item) => ({
     ...item,
-    isAdded: false
-  }))
-})
+    isAdded: cart.value.some((cartItem) => cartItem.code_book === item.code_book)
+  }));
+}, { deep: true });
 
 provide('addFavorite', addFavorite);
 </script>
