@@ -2,6 +2,7 @@
 <script setup>
 import { inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import Search from './SearchBar.vue';
 
 defineProps({ price: Number });
 const emit = defineEmits(['openDrawer']);
