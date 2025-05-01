@@ -10,7 +10,7 @@ class BookController {
                 // Если есть параметр title, выполняем поиск
                 const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                    'where book_name ILIKE $1', [`%${searchQuery}%`]);
+                    'where book_name ILIKE $1 OR surname_author ILIKE $1', [`%${searchQuery}%`]);
                 return res.json(books.rows);
             }
             

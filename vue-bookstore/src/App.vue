@@ -83,7 +83,7 @@ provide('onChangeSearchInput', onChangeSearchInput);
 
   <Header :price="price" @open-drawer="openDrawer"/>
 
-  <div class="p-14 mb-16">
+  <div class="mt-[140px] p-14 mb-16">
     <router-view></router-view>
   </div>
 

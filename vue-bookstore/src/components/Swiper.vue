@@ -34,7 +34,7 @@
     navigation
     :loop=true
     :pagination="{ clickable: true }"
-    class="mb-12"
+    class="mb-16 mt-6"
   >
     <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner2.jpg"/></swiper-slide>
     <swiper-slide class="justify-items-center"><img class="w-4/5" src="/world-book-banner.jpg"/></swiper-slide>

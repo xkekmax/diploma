@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, inject, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 import BookPageItem from '../components/BookPageItem.vue';
 
@@ -17,6 +18,15 @@ const isAdded = computed(() =>
   cart.value.some((item) => item.code_book === bookData.value?.code_book)
 );
 
+const router = useRouter();
+const searchQuery = inject('searchQuery');
+
+const goToAuthorBooks = () => {
+  if (searchQuery && bookData.value?.surname_author) {
+    searchQuery.value = bookData.value.surname_author;
+    router.push('/');
+  }
+};
 
 onMounted(async () => {
     try {
@@ -60,7 +70,8 @@ const toggleAddToCart = () => {
       :isFavorite="bookData.isFavorite"
       :isAdded="isAdded"
       :onClickAdd="toggleAddToCart"
-      :onClickFavorite="bookData.onClickFavorite" />
+      :onClickFavorite="bookData.onClickFavorite"
+      :onAuthorClick="goToAuthorBooks" />
     </div>
 </template>
 

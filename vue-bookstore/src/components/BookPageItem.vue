@@ -24,6 +24,7 @@ defineProps({
   isAdded: Boolean,
   onClickAdd: Function,
   onClickFavorite: Function,
+  onAuthorClick: Function
 })
 </script>
 
@@ -32,8 +33,10 @@ defineProps({
     <div class="flex flex-col px-10">
       <div class="flex flex-col gap-4 mb-4">
         <h2 class="text-3xl font-bold ">{{ title }}</h2>
-        <a class="text-gray-600 border-b border-gray-200 w-fit hover:text-red-400 transition"
-        href="#">{{ author }}</a>
+        <a class="text-gray-600 border-b border-gray-200 w-fit hover:text-red-400
+            transition cursor-pointer" @click="onAuthorClick">
+            {{ author }}
+        </a>
       </div>
 
       <div class="flex gap-20">
@@ -87,12 +90,12 @@ defineProps({
               >
               {{ isAdded ? 'Убрать' : 'Купить' }}
             </button>
-            <img 
+            <img
               @click="onClickFavorite"
-              class="cursor-pointer mx-4" 
+              class="cursor-pointer mx-4"
               :src="isFavorite ? '/like-4.svg' : '/like-3.svg'"alt="Plus">
           </div>
-          
+
         </div>
       </div>
 
@@ -125,7 +128,9 @@ defineProps({
             <p>{{ ISBN }}</p>
             <p>{{ publishing }}</p>
             <p>{{ series }}</p>
-            <p>{{ author }}</p>
+            <a class="hover:text-red-400 transition cursor-pointer" @click="onAuthorClick">
+              {{ author }}
+            </a>
             <p>{{ translator }}</p>
             <p>{{ cover }}</p>
             <p>{{ pageCount }}</p>

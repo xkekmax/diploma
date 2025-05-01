@@ -42,19 +42,22 @@ const editProfile = () => {
     alert('Пользователь не авторизован');
   }
 };
+
+const reloadHome = () => {
+  window.location.href = '/'; // Принудительная перезагрузка на главную
+};
 </script>
 
 <template>
-  <header class="flex justify-between border-b border-red-200 px-16 py-12">
-    <router-link to="/">
-      <div class="flex items-center cursor-pointer gap-4">
-        <img src="/logo.png" alt="Logo" class="w-14" />
-        <div>
-          <h2 class="text-xl font-bold uppercase text-orange-900">Witch books</h2>
-          <p class="text-orange-400">Магазин книг</p>
-        </div>
+  <header class="flex justify-between border-b border-red-200 px-16 py-12 fixed top-0 z-10 bg-white w-4/5 m-auto">
+    <div @click="reloadHome" class="flex items-center cursor-pointer gap-4">
+      <img src="/logo.png" alt="Logo" class="w-14" />
+      <div>
+        <h2 class="text-xl font-bold uppercase text-orange-900">Witch books</h2>
+        <p class="text-orange-400">Магазин книг</p>
       </div>
-    </router-link>
+    </div>
+
     <Search />
 
     <ul class="flex items-center gap-10">

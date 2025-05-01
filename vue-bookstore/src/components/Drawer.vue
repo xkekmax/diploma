@@ -50,7 +50,7 @@ const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
 </script>
 
 <template>
-  <div class="fixed top-0 left-0 h-full w-full bg-black z-10 opacity-70"></div>
+  <div class="fixed top-0 left-0 h-full w-full bg-black z-20 opacity-70"></div>
   <div class="bg-white w-1/4 h-full fixed right-0 top-0 z-20 p-8">
     <div class="flex items-center gap-5 mb-8">
       <img @click="closeDrawer" class="opacity-50 hover:opacity-100 transition cursor-pointer hover:-translate-x-1" src="/arrow.svg" alt="arrow-left"/>

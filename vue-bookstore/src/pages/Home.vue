@@ -31,7 +31,8 @@ const onClickPlus = (item) => {
 
 const onChangeSelect = (event) => {
   sortBy.value = event.target.value;
-}
+  searchQuery.value = ''; // Очищаем строку поиска
+};
 
 const fetchFavorites = async () => {
   try {
