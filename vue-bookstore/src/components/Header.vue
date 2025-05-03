@@ -36,15 +36,40 @@ const logout = () => {
 
 const editProfile = () => {
   const userId = localStorage.getItem('user_id');
-  if (userId) {
-    router.push({ name: 'Profile', query: { edit: 'true' } });
-  } else {
+  if (!userId) {
     alert('Пользователь не авторизован');
+    return;
+  }
+
+  const currentRoute = router.currentRoute.value;
+  const isOnProfile = currentRoute.name === 'Profile';
+  const isEditMode = currentRoute.query.edit === 'true';
+
+  if (isOnProfile && isEditMode) {
+    window.location.reload();
+  } else {
+    router.push({ name: 'Profile', query: { edit: 'true' } });
   }
 };
 
 const reloadHome = () => {
   window.location.href = '/'; // Принудительная перезагрузка на главную
+};
+
+const goToFavorites = () => {
+  if (router.currentRoute.value.name === 'Favorites') {
+    window.location.reload();
+  } else {
+    router.push({ name: 'Favorites' });
+  }
+};
+
+const goToOrders = () => {
+  if (router.currentRoute.value.name === 'Profile') {
+    window.location.reload(); // или router.replace + setTimeout
+  } else {
+    router.push({ name: 'Profile' });
+  }
 };
 </script>
 
@@ -66,12 +91,13 @@ const reloadHome = () => {
         <b>{{ price }} руб.</b>
       </li>
 
-      <router-link to="/favorites">
-        <li class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
-          <img src="/heart.svg" alt="Cart" />
-          <span>Закладки</span>
-        </li>
-      </router-link>
+      <li
+        class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400"
+        @click="goToFavorites"
+      >
+        <img src="/heart.svg" alt="Favorites" />
+        <span>Закладки</span>
+      </li>
 
       <li
         v-if="isAuthorized"
@@ -90,7 +116,7 @@ const reloadHome = () => {
           v-show="showDropdown"
           class="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-md z-10 w-40 transition-opacity duration-200"
         >
-          <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @click="$router.push('/profile')">Заказы</li>
+          <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @click="goToOrders">Заказы</li>
           <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @click="editProfile">Редактировать</li>
           <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500" @click="logout">Выйти</li>
         </ul>
