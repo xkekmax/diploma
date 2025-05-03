@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, provide, computed, onMounted } from 'vue';
+import axios from 'axios';
 import debounce from 'lodash.debounce';
 
 import Drawer from './components/Drawer.vue';
@@ -68,12 +69,41 @@ const setUserName = (name) => {
   localStorage.setItem('user_name', name);
 };
 
+const addFavorite = async (item) => {
+  try {
+    const idCustomer = localStorage.getItem('user_id');
+    if (!idCustomer) {
+      alert('Пользователь не авторизован');
+      return;
+    }
+
+    if (!item.isFavorite) {
+      const obj = {
+        codeBook: item.code_book,
+        idCustomer
+      };
+
+      const { data } = await axios.post('http://localhost:8080/witch/favorite', obj);
+      item.isFavorite = true;
+      item.favoriteId = data.id_fav;
+    } else {
+      await axios.delete('http://localhost:8080/witch/favorite/' + item.favoriteId);
+      item.isFavorite = false;
+      item.favoriteId = null;
+    }
+  } catch (err) {
+    console.log("Удаление, favoriteId:", item.favoriteId);
+    console.log('Ошибка при добавлении/удалении из избранного:', err);
+  }
+};
+
 provide('userName', userName);
 provide('setUserName', setUserName);
 provide('isAuthorized', isAuthorized);
 provide('setUserAuthorized', setUserAuthorized);
 provide('searchQuery', searchQuery);
 provide('onChangeSearchInput', onChangeSearchInput);
+provide('addFavorite', addFavorite);
 </script>
 
 <template>

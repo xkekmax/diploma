@@ -69,10 +69,28 @@ const addFavorite = async (item) => {
       const { data } = await axios.post('http://localhost:8080/witch/favorite', obj);
       item.isFavorite = true;
       item.favoriteId = data.id_fav;
+
+      // Обновляем локальный список избранных
+      items.value = items.value.map((book) => {
+        if (book.code_book === item.code_book) {
+          book.isFavorite = true;
+          book.favoriteId = data.id_fav;
+        }
+        return book;
+      });
     } else {
       await axios.delete('http://localhost:8080/witch/favorite/' + item.favoriteId);
       item.isFavorite = false;
       item.favoriteId = null;
+
+      // Обновляем локальный список избранных
+      items.value = items.value.map((book) => {
+        if (book.code_book === item.code_book) {
+          book.isFavorite = false;
+          book.favoriteId = null;
+        }
+        return book;
+      });
     }
   } catch (err) {
     console.log('Ошибка при добавлении/удалении из избранного:', err);
@@ -131,7 +149,6 @@ watch(cart, () => {
   }));
 }, { deep: true });
 
-provide('addFavorite', addFavorite);
 </script>
 
 <template>

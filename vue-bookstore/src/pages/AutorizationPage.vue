@@ -90,7 +90,7 @@ watch(() => route.fullPath, () => {
             <h3 class="my-4 text-xl font-semibold text-red-400">
               Заказ №{{ order.id_order }} на: {{ new Date(order.order_date).toLocaleDateString() }}
             </h3>
-            <BookList :items="order.books" />
+            <BookList :items="order.books" is-favorites/>
           </div>
         </div>
       </div>

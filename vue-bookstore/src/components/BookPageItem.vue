@@ -93,9 +93,8 @@ defineProps({
             <img
               @click="onClickFavorite"
               class="cursor-pointer mx-4"
-              :src="isFavorite ? '/like-4.svg' : '/like-3.svg'"alt="Plus">
+              :src="isFavorite ? '/like-4.svg' : '/like-3.svg'" alt="Plus">
           </div>
-
         </div>
       </div>
 

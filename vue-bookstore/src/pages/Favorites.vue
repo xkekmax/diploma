@@ -8,8 +8,20 @@ import BookList from '../components/BookList.vue'
 import InfoBlock from '../components/InfoBlock.vue';
 
 const favorites = ref([]);
-const { cart } = inject('cart'); // Теперь инжектим здесь!
-const { loadCartFromLocalStorage } = useCartSync(cart); // Передаём в функцию cart
+const { cart, addToCart, removeFromCart } = inject('cart');
+const addFavorite = inject('addFavorite');
+
+const { loadCartFromLocalStorage } = useCartSync(cart);
+
+const onClickPlus = (item) => {
+  if (!item.isAdded) {
+    addToCart(item);
+  } else {
+    removeFromCart(item);
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart.value));
+};
 
 onMounted(async () => {
   loadCartFromLocalStorage();
@@ -19,7 +31,12 @@ onMounted(async () => {
     if (!userId) return;
 
     const { data } = await axios.get(`http://localhost:8080/witch/favorites?userId=${userId}`);
-    favorites.value = data;
+    favorites.value = data.map((book) => ({
+      ...book,
+      favoriteId: book.id_fav,
+      isFavorite: true,
+      isAdded: cart.value.some(cartItem => cartItem.code_book === book.code_book),
+    }));
   } catch (err) {
     console.log(err);
   }
@@ -38,8 +55,11 @@ onMounted(async () => {
     </div>
 
     <div v-else>
-      <BookList :items="favorites" is-favorites/>
+      <BookList
+        :items="favorites"
+        @add-favorite="addFavorite"
+        @add-to-cart="onClickPlus"
+      />
     </div>
   </div>
-
 </template>
