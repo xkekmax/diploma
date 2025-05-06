@@ -3,8 +3,6 @@ import { inject } from 'vue'
 import BookItem from './BookItem.vue'
 
 const { cart, removeFromCart } = inject('cart')
-
-
 </script>
 
 <template>
@@ -17,7 +15,7 @@ const { cart, removeFromCart } = inject('cart')
       :author="item.surname_author"
       :price="item.price"
       :image-url="item.cover_art"
-      @on-click-remove="() => removeFromCart(item)"
+      @onClickRemove="(codeBook) => removeFromCart(codeBook)"
     />
   </div>
 </template>

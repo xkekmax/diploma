@@ -32,10 +32,16 @@ const addToCart = (item) => {
   item.isAdded = true;
 };
 
-const removeFromCart = (item) => {
-  cart.value.splice(cart.value.indexOf(item), 1);
-  item.isAdded = false;
+const removeFromCart = (codeBook) => {
+  const index = cart.value.findIndex((i) => i.code_book === codeBook);
+  if (index !== -1) {
+    cart.value[index].isAdded = false;
+    cart.value.splice(index, 1);
+  } else {
+    console.warn('Товар не найден в корзине для удаления');
+  }
 };
+
 
 watch(cart, () => {
   localStorage.setItem('cart', JSON.stringify(cart.value));

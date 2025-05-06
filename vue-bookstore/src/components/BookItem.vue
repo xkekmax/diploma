@@ -22,9 +22,9 @@ const navigateToBookPage = () => {
   router.push({ name: 'BookPage', params: { id: props.code } });
 };
 
-const handleRemoveClick = (event) => {
+const handleRemoveClick = (event, codeBook) => {
   event.stopPropagation(); // Останавливаем всплытие события
-  emit('onClickRemove');
+  emit('onClickRemove', codeBook); // Передаем только код книги
 };
 </script>
 
@@ -42,7 +42,7 @@ const handleRemoveClick = (event) => {
         </div>
 
         <img
-          @click="handleRemoveClick"
+          @click="handleRemoveClick($event, props.code)"
           class="opacity-50 hover:opacity-100 transition cursor-pointer"
           src="/cancel.svg"
           alt="Close"

@@ -1,27 +1,25 @@
 <script setup>
-import { onMounted, ref, inject, computed } from 'vue';
+import { onMounted, ref, inject, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import BookPageItem from '../components/BookPageItem.vue';
 
 const props = defineProps({
-  id: String // Получаем bookCode как пропс
+  id: String
 });
 
 const bookData = ref(null);
 
-// Инжектируем состояние и методы корзины
 const { cart, addToCart, removeFromCart } = inject('cart');
+const addFavorite = inject('addFavorite');
+const searchQuery = inject('searchQuery');
+const router = useRouter();
 
-// Вычисляемое свойство для проверки, добавлена ли книга в корзину
 const isAdded = computed(() =>
   cart.value.some((item) => item.code_book === bookData.value?.code_book)
 );
 
-const addFavorite = inject('addFavorite');
-
-const router = useRouter();
-const searchQuery = inject('searchQuery');
+const isFavorite = computed(() => bookData.value?.isFavorite);
 
 const goToAuthorBooks = () => {
   if (searchQuery && bookData.value?.surname_author) {
@@ -30,11 +28,11 @@ const goToAuthorBooks = () => {
   }
 };
 
-const isFavorite = computed(() => bookData.value?.isFavorite);
-
 const toggleAddToCart = () => {
+  if (!bookData.value) return;
+
   if (isAdded.value) {
-    removeFromCart(bookData.value);
+    removeFromCart(bookData.value.code_book);
   } else {
     addToCart(bookData.value);
   }
@@ -69,9 +67,9 @@ const toggleFavorite = async () => {
   }
 };
 
-onMounted(async () => {
+const loadBook = async (id) => {
   try {
-    const response = await axios.get('http://localhost:8080/witch/book/' + props.id);
+    const response = await axios.get('http://localhost:8080/witch/book/' + id);
     bookData.value = response.data;
 
     const idCustomer = localStorage.getItem('user_id');
@@ -88,8 +86,17 @@ onMounted(async () => {
   } catch (error) {
     console.error('Ошибка при загрузке книги:', error);
   }
+};
+
+// Загружаем при первом монтировании
+onMounted(() => {
+  loadBook(props.id);
 });
 
+// Также загружаем при изменении id (например, переход на другую книгу)
+watch(() => props.id, (newId) => {
+  loadBook(newId);
+});
 </script>
 
 <template>
