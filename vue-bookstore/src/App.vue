@@ -27,21 +27,35 @@ const openDrawer = () => {
   drawerOpen.value = true;
 };
 
-const addToCart = (item) => {
+const addToCart = async (item) => {
   cart.value.push(item);
   item.isAdded = true;
+
+  const idCustomer = localStorage.getItem('user_id');
+  if (idCustomer) {
+    await axios.post('http://localhost:8080/witch/cart/add', {
+      id_customer: Number(idCustomer),
+      code_book: item.code_book,
+      quantity: 1,
+    });
+  }
 };
 
-const removeFromCart = (codeBook) => {
+const removeFromCart = async (codeBook) => {
   const index = cart.value.findIndex((i) => i.code_book === codeBook);
   if (index !== -1) {
     cart.value[index].isAdded = false;
     cart.value.splice(index, 1);
-  } else {
-    console.warn('Товар не найден в корзине для удаления');
+
+    const idCustomer = localStorage.getItem('user_id');
+    if (idCustomer) {
+      await axios.post('http://localhost:8080/witch/cart/remove', {
+        id_customer: Number(idCustomer),
+        code_book: codeBook,
+      });
+    }
   }
 };
-
 
 watch(cart, () => {
   localStorage.setItem('cart', JSON.stringify(cart.value));
@@ -55,8 +69,16 @@ provide('cart', {
   openDrawer
 });
 
-const { loadCartFromLocalStorage } = useCartSync(cart);
-onMounted(loadCartFromLocalStorage); // <---- Вот это нужно
+const { loadCartFromLocalStorage, syncCartFromServer } = useCartSync(cart);
+
+onMounted(() => {
+  const isAuth = !!localStorage.getItem('user_id');
+  if (isAuth) {
+    syncCartFromServer();
+  } else {
+    loadCartFromLocalStorage();
+  }
+});
 
 /* Корзина (end) */
 
