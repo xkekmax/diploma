@@ -78,65 +78,46 @@ class BookController {
         }
     }
 
-    async getCart(req, res) {
-      const { id_customer } = req.params;
-  
-      // Получаем id корзины
-      const cartResult = await db.query('SELECT id_cart FROM carts WHERE id_customer = $1', [id_customer]);
-      if (cartResult.rows.length === 0) {
-        return res.json([]); // Корзины пока нет
-      }
-  
-      const id_cart = cartResult.rows[0].id_cart;
-  
-      // Получаем содержимое корзины
-      const items = await db.query(`
-        SELECT ci.code_book, b.book_name, a.surname_author, b.cover_art, b.price, ci.quantity
-        FROM cart_items ci
-        JOIN books b ON ci.code_book = b.code_book
-        JOIN authors a ON b.id_author = a.id_author
-        WHERE ci.id_cart = $1
-      `, [id_cart]);
-  
-      res.json(items.rows);
-    }
-  
-    async addToCart(req, res) {
-      const { id_customer, code_book, quantity = 1 } = req.body;
-  
-      // Проверка: есть ли уже корзина
-      let cartResult = await db.query('SELECT id_cart FROM carts WHERE id_customer = $1', [id_customer]);
-      let id_cart;
-      if (cartResult.rows.length === 0) {
-        const newCart = await db.query('INSERT INTO carts (id_customer) VALUES ($1) RETURNING id_cart', [id_customer]);
-        id_cart = newCart.rows[0].id_cart;
-      } else {
-        id_cart = cartResult.rows[0].id_cart;
-      }
-  
-      // Добавление или обновление записи
-      await db.query(`
-        INSERT INTO cart_items (id_cart, code_book, quantity)
-        VALUES ($1, $2, $3)
-        ON CONFLICT (id_cart, code_book)
-        DO UPDATE SET quantity = cart_items.quantity + EXCLUDED.quantity
-      `, [id_cart, code_book, quantity]);
-  
-      res.json({ success: true });
-    }
-  
-    async removeFromCart(req, res) {
-      const { id_customer, code_book } = req.body;
-  
-      const cartResult = await db.query('SELECT id_cart FROM carts WHERE id_customer = $1', [id_customer]);
-      if (cartResult.rows.length === 0) return res.status(400).json({ error: 'Cart not found' });
-  
-      const id_cart = cartResult.rows[0].id_cart;
-      await db.query('DELETE FROM cart_items WHERE id_cart = $1 AND code_book = $2', [id_cart, code_book]);
-  
-      res.json({ success: true });
-    }    
-
+    async createDrawer(req, res) {
+        try {
+          const { items, totalPrice, id_customer } = req.body;
+      
+          if (!items || items.length === 0) {
+            return res.status(400).json({ message: 'Корзина пуста.' });
+          }
+      
+          if (!id_customer) {
+            return res.status(400).json({ message: 'Не передан идентификатор пользователя.' });
+          }
+      
+          // Сохраняем заказ в таблицу orders с привязкой к пользователю
+          const orderResult = await db.query(
+            `INSERT INTO public.orders (total_price, order_date, id_customer)
+             VALUES ($1, NOW(), $2)
+             RETURNING id_order`,
+            [totalPrice, id_customer]
+          );
+      
+          const orderId = orderResult.rows[0].id_order;
+      
+          // Добавляем книги в order_items
+          const itemQueries = items.map(item =>
+            db.query(
+              `INSERT INTO public.order_items (id_order, code_book)
+               VALUES ($1, $2)`,
+              [orderId, item.code_book]
+            )
+          );
+          await Promise.all(itemQueries);
+      
+          return res.json({ message: 'Заказ успешно создан.', orderId });
+      
+        } catch (error) {
+          console.error('Ошибка при создании заказа:', error);
+          res.status(500).json({ message: 'Ошибка при создании заказа', error });
+        }
+      }         
+    
     async getBook(req, res) {
         try {
             const id = req.params.id
