@@ -98,11 +98,7 @@ defineProps({
         </div>
       </div>
 
-      <div class="text-2xl font-medium my-10">
-        Отзывы
-      </div>
-
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 mt-12">
         <div class="text-2xl font-medium" id="description">
           Описание и характеристики
         </div>

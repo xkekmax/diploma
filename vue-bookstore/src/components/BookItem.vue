@@ -32,18 +32,18 @@ const handleRemoveClick = (event, codeBook) => {
   <div class="flex items-center border border-slate-200 p-5 rounded-xl gap-5"
       @click="navigateToBookPage">
 
-    <img class="w-20 h-22 cursor-pointer" :src="props.imageUrl" :alt="props.title" />
+    <img class="w-16 cursor-pointer" :src="props.imageUrl" :alt="props.title" />
 
-    <div class="flex flex-col flex-1">
+    <div class="flex flex-col flex-1 text-sm">
       <div class="flex justify-between mb-2">
         <div class="cursor-pointer">
           <p>{{ props.title }}</p>
-          <p class="text-slate-400">{{ props.author }}</p>
+          <p class="text-slate-400 ">{{ props.author }}</p>
         </div>
 
         <img
           @click="handleRemoveClick($event, props.code)"
-          class="opacity-50 hover:opacity-100 transition cursor-pointer"
+          class="opacity-50 hover:opacity-100 transition cursor-pointer w-7"
           src="/cancel.svg"
           alt="Close"
         />

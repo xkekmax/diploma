@@ -37,23 +37,23 @@ const handleAuthorClick = (event) => {
 
 <template>
   <router-link :to="{ name: 'BookPage', params: { id: props.code } }">
-    <div class="relative bg-white border border-red-100 rounded-r-lg p-8 cursor-pointer transition hover:-translate-y-2 hover:shadow-xl">
-      <img v-if="onClickFavorite" @click="handleFavoriteClick" :src="isFavorite ? '/like-4.svg' : '/like-3.svg'" alt="Like" />
-      <img :src="imageUrl" :alt="title" class="mx-auto w-3/4 h-56 object-contain" />
+    <div class="relative bg-white border border-red-100 rounded-r-lg px-4 py-6  cursor-pointer transition hover:-translate-y-2 hover:shadow-xl">
+      <img v-if="onClickFavorite" @click="handleFavoriteClick" :src="isFavorite ? '/like-4.svg' : '/like-3.svg'" alt="Like" class="w-7"/>
+      <img :src="imageUrl" :alt="title" class="mx-auto w-8/12" />
 
-      <div class="flex justify-between mt-4">
+      <div class="flex justify-between mt-4 px-4">
         <div class="flex flex-col">
-          <p class="line-clamp-2 overflow-hidden h-12">{{ title }}</p>
+          <p class="line-clamp-2 overflow-hidden h-10 text-sm">{{ title }}</p>
 
           <!-- Кликабельное имя автора -->
           <span
-            class="text-slate-400 cursor-pointer hover:text-red-400  no-underline"
+            class="text-slate-400 cursor-pointer hover:text-red-400 text-sm no-underline pt-2"
             @click.stop="handleAuthorClick"
           >
             {{ author }}
           </span>
 
-          <b class="mt-4">{{ price }} руб.</b>
+          <b class="mt-2 ">{{ price }} руб.</b>
         </div>
 
         <img
@@ -61,6 +61,7 @@ const handleAuthorClick = (event) => {
           @click="handleAddClick"
           :src="!isAdded ? '/plus.svg' : '/checked.svg'"
           alt="Plus"
+          class="w-7"
         />
       </div>
     </div>

@@ -74,20 +74,20 @@ const goToOrders = () => {
 </script>
 
 <template>
-  <header class="flex justify-between border-b border-red-200 px-16 py-12 fixed top-0 z-10 bg-white w-4/5 m-auto">
+  <header class="flex justify-between items-center border-b border-red-200 px-4 md:px-20 py-12 fixed top-0 left-1/2 transform -translate-x-1/2 z-10 bg-white w-full max-w-screen-xl">
     <div @click="reloadHome" class="flex items-center cursor-pointer gap-4">
-      <img src="/logo.png" alt="Logo" class="w-14" />
+      <img src="/logo.png" alt="Logo" class="w-12" />
       <div>
-        <h2 class="text-xl font-bold uppercase text-orange-900">Witch books</h2>
-        <p class="text-orange-400">Магазин книг</p>
+        <h2 class="text-lg font-bold uppercase text-orange-900">Witch books</h2>
+        <p class="text-orange-400 text-sm">Магазин книг</p>
       </div>
     </div>
 
     <Search />
 
-    <ul class="flex items-center gap-10">
+    <ul class="flex items-center gap-8 pl-4">
       <li @click="() => emit('openDrawer')" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400 w-32">
-        <img src="/cart.svg" alt="Cart" />
+        <img src="/cart.svg" alt="Cart" class="w-7"/>
         <b>{{ price }} руб.</b>
       </li>
 
@@ -95,7 +95,7 @@ const goToOrders = () => {
         class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400"
         @click="goToFavorites"
       >
-        <img src="/heart.svg" alt="Favorites" />
+        <img src="/heart.svg" alt="Favorites" class="w-7"/>
         <span>Закладки</span>
       </li>
 
@@ -107,7 +107,7 @@ const goToOrders = () => {
       >
         <!-- перемещаем hover сюда -->
         <div class="flex items-center gap-3 hover:text-red-400">
-          <img src="/cat.svg" alt="Profile" />
+          <img src="/cat.svg" alt="Profile" class="w-7"/>
           <span>{{ userName }}</span>
         </div>
 

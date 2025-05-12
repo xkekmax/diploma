@@ -17,7 +17,7 @@ const onClickPlus = (item) => {
   if (!item.isAdded) {
     addToCart(item);
   } else {
-    removeFromCart(item);
+    removeFromCart(item.code_book);
   }
 
   localStorage.setItem('cart', JSON.stringify(cart.value));

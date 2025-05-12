@@ -23,7 +23,7 @@ const onClickPlus = (item) => {
   if (!item.isAdded) {
     addToCart(item);
   } else {
-    removeFromCart(item);
+    removeFromCart(item.code_book);
   }
 
   saveCartToLocalStorage(cart.value);  // Сохраняем корзину в localStorage
@@ -155,7 +155,7 @@ watch(cart, () => {
 
   <Swiper/>
 
-  <div class="flex justify-between items-center mb-8">
+  <div class="flex justify-between items-center mb-8 text-sm">
       <h2 class="text-3xl font-bold text-orange-900">Все книги</h2>
       <select @change="onChangeSelect" class="py-2 px-3 border rounded-md outline-none">
         <option value=title>Все книги</option>
@@ -173,7 +173,7 @@ watch(cart, () => {
       image-url="/bookmark.png"/>
     </div>
 
-    <BookList :items="items" @add-favorite="addFavorite" @add-to-cart="onClickPlus"/>
+    <BookList :items="items" @add-favorite="addFavorite" @add-to-cart="onClickPlus" class="mx-8"/>
   </div>
 
 </template>

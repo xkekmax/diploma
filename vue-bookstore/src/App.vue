@@ -113,16 +113,13 @@ provide('addFavorite', addFavorite);
 </script>
 
 <template>
-  <div class="bg-white w-4/5 m-auto rounded-2xl shadow-xl mt-10">
-
-  <Drawer v-if="drawerOpen" :price="price" :sale-price="salePrice" :total-price="totalPrice"/>
-
-  <Header :price="price" @open-drawer="openDrawer"/>
-
-  <div class="mt-[140px] p-14 mb-16">
-    <router-view></router-view>
+  <div class="bg-white max-w-screen-xl mx-auto pt-8">
+    <Drawer v-if="drawerOpen" :price="price" :sale-price="salePrice" :total-price="totalPrice"/>
+    <Header :price="price" @open-drawer="openDrawer"/>
+    <div class="mt-[140px] p-10 md:p-10 mb-16">
+      <router-view></router-view>
+    </div>
+    <Footer/>
   </div>
-
-  <Footer/>
-</div>
 </template>
+

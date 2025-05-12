@@ -6,7 +6,7 @@ const searchQuery = inject('searchQuery');
 </script>
 
 <template>
-  <form @submit.prevent class="w-6/12">
+  <form @submit.prevent class="w-5/12">
     <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Search</label>
     <div class="relative">
       <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
