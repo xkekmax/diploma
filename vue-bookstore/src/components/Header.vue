@@ -65,10 +65,10 @@ const goToFavorites = () => {
 };
 
 const goToOrders = () => {
-  if (router.currentRoute.value.name === 'Profile') {
-    window.location.reload(); // или router.replace + setTimeout
+  if (router.currentRoute.value.name === 'Profile' && router.currentRoute.value.query.edit !== 'true') {
+    window.location.reload();
   } else {
-    router.push({ name: 'Profile' });
+    router.push({ name: 'Profile' }); // Без query — это и есть страница заказов
   }
 };
 </script>

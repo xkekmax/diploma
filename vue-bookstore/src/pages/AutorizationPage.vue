@@ -22,7 +22,6 @@ const fetchUserData = async () => {
   try {
     const { data } = await axios.get(`http://localhost:8080/witch/user/${userId}`);
 
-    // Убедитесь, что дата передается правильно
     if (data.date_of_birthday) {
       const date = new Date(data.date_of_birthday);
       data.date_of_birthday = date.toISOString().slice(0, 10);
@@ -57,7 +56,6 @@ const init = async () => {
 
 onMounted(init);
 
-// 🟡 добавь это:
 watch(() => route.fullPath, () => {
   init();
 });
@@ -65,10 +63,9 @@ watch(() => route.fullPath, () => {
 
 <template>
   <div>
-    <Autorization v-if="!isAuthorized && !isRegistering && !editMode" @goToRegister="switchToRegister" />
+    <Autorization v-if="!isAuthorized && !isRegistering && !editMode"/>
     <Registration
       v-if="(isRegistering && !isAuthorized) || editMode"
-      @goToLogin="switchToLogin"
       :user-data="userData"
       :edit-mode="editMode"
     />

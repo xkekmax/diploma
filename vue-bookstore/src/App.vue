@@ -6,6 +6,7 @@ import debounce from 'lodash.debounce';
 import Drawer from './components/Drawer.vue';
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
+import ScrollToTop from './components/ScrollToTop.vue';
 import { useCartSync } from './useCart';
 
 const searchQuery = ref('');
@@ -119,6 +120,7 @@ provide('addFavorite', addFavorite);
     <div class="mt-[140px] p-10 md:p-10 mb-16">
       <router-view></router-view>
     </div>
+    <ScrollToTop/>
     <Footer/>
   </div>
 </template>
