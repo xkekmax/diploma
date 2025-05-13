@@ -54,6 +54,14 @@ const init = async () => {
   }
 };
 
+const switchToRegister = () => {
+  isRegistering.value = true;
+};
+
+const switchToLogin = () => {
+  isRegistering.value = false;
+};
+
 onMounted(init);
 
 watch(() => route.fullPath, () => {
@@ -63,9 +71,10 @@ watch(() => route.fullPath, () => {
 
 <template>
   <div>
-    <Autorization v-if="!isAuthorized && !isRegistering && !editMode"/>
+    <Autorization v-if="!isAuthorized && !isRegistering && !editMode" @goToRegister="switchToRegister"/>
     <Registration
       v-if="(isRegistering && !isAuthorized) || editMode"
+      @goToLogin="switchToLogin" 
       :user-data="userData"
       :edit-mode="editMode"
     />
