@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import { ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
@@ -7,8 +6,9 @@ import axios from 'axios';
 const login = ref('');
 const password = ref('');
 const router = useRouter();
-const setUserAuthorized = inject('setUserAuthorized'); // добавим это
+const setUserAuthorized = inject('setUserAuthorized');
 const setUserName = inject('setUserName');
+const setUserRole = inject('setUserRole');
 
 const autorizationUser = async () => {
   try {
@@ -16,15 +16,24 @@ const autorizationUser = async () => {
     const response = await axios.post('http://localhost:8080/witch/autorization', userData);
     const user = response.data.user;
 
-    if (!user || !user.id_customer) {
+    if (!user || (!user.id_customer && user.id_customer !== 'admin')) {
       alert('Неверный логин или пароль');
       return;
     }
 
-    localStorage.setItem('user_id', user.id_customer);
-    setUserName(user.name); // обновляем реактивно
+    if (!user || (!user.id_customer && user.id_customer !== 'admin')) {
+      alert('Неверный логин или пароль');
+      return;
+    }
 
+    const isAdmin = user.id_customer === 'admin';
+    localStorage.setItem('user_id', isAdmin ? 'admin' : user.id_customer);
+    localStorage.setItem('user_name', user.name);
+    localStorage.setItem('user_role', isAdmin ? 'admin' : 'user');
+    setUserName(user.name);
+    setUserRole(isAdmin ? 'admin' : 'user');
     setUserAuthorized(true);
+
     console.warn('Авторизация успешна!');
     router.push('/');
 
@@ -33,7 +42,6 @@ const autorizationUser = async () => {
     alert('Ошибка авторизации, попробуйте снова.');
   }
 };
-
 </script>
 
 <template>

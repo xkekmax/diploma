@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import { inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -9,8 +8,10 @@ const emit = defineEmits(['openDrawer']);
 const router = useRouter();
 const isAuthorized = inject('isAuthorized');
 const userName = inject('userName');
+const userRole = inject('userRole');  // Получаем роль пользователя
 const setUserAuthorized = inject('setUserAuthorized');
 const setUserName = inject('setUserName');
+const setUserRole = inject('setUserRole');  // Функция для обновления роли пользователя
 
 const showDropdown = ref(false);
 let hideTimeout;
@@ -29,8 +30,10 @@ const onMouseLeave = () => {
 const logout = () => {
   localStorage.removeItem('user_id');
   localStorage.removeItem('user_name');
+  localStorage.removeItem('user_role');  // Удаляем роль пользователя из localStorage
   setUserAuthorized(false);
   setUserName('');
+  setUserRole('');  // Сброс роли пользователя
   window.location.reload(); // Перезагрузка страницы
 };
 
@@ -91,10 +94,14 @@ const goToOrders = () => {
         <b>{{ price }} руб.</b>
       </li>
 
-      <li
-        class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400"
-        @click="goToFavorites"
-      >
+      <!-- Кнопка для администратора -->
+      <li v-if="userRole === 'admin'" @click="router.push('/admin')" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
+        <img src="/plus.svg" alt="Add" class="w-7"/>
+        <span>Добавить</span>
+      </li>
+
+      <!-- Кнопка для обычного пользователя (закладки) -->
+      <li v-else @click="goToFavorites" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
         <img src="/heart.svg" alt="Favorites" class="w-7"/>
         <span>Закладки</span>
       </li>
@@ -105,13 +112,11 @@ const goToOrders = () => {
         @mouseenter="onMouseEnter"
         @mouseleave="onMouseLeave"
       >
-        <!-- перемещаем hover сюда -->
         <div class="flex items-center gap-3 hover:text-red-400">
           <img src="/cat.svg" alt="Profile" class="w-7"/>
           <span>{{ userName }}</span>
         </div>
 
-        <!-- выпадающий список не унаследует hover -->
         <ul
           v-show="showDropdown"
           class="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-md z-10 w-40 transition-opacity duration-200"

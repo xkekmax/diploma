@@ -5,25 +5,53 @@ class UserController {
     async autorizeUser(req, res) {
       try {
         const { login, password } = req.body;
-    
-        const query = `
-          SELECT * FROM public.customers 
-          WHERE login = $1 AND password = $2
+
+        // Проверяем таблицу пользователей
+        const queryCustomers = `
+          SELECT c.*, r.role_name
+          FROM public.customers c
+          LEFT JOIN public.roles r ON c.id_role = r.id_role
+          WHERE c.login = $1 AND c.password = $2
         `;
         const values = [login, password];
-    
-        const result = await db.query(query, values);
-    
-        if (result.rows.length === 0) {
-          return res.status(404).json({ message: 'Неверный логин или пароль' });
+
+        const resultCustomers = await db.query(queryCustomers, values);
+
+        // Если пользователь не найден в таблице customers, проверяем таблицу admins
+        if (resultCustomers.rows.length === 0) {
+          const queryAdmins = `
+            SELECT 'admin' AS role_name, a.login
+            FROM public.admins a
+            WHERE a.login = $1 AND a.password = $2
+          `;
+          const resultAdmins = await db.query(queryAdmins, values);
+
+          if (resultAdmins.rows.length === 0) {
+            return res.status(404).json({ message: 'Неверный логин или пароль' });
+          }
+
+          // Если найден администратор
+          const admin = resultAdmins.rows[0];
+          return res.status(200).json({
+            message: 'Авторизация успешна',
+            user: {
+              id_customer: 'admin', // Для админа ставим специальное значение (например, 'admin')
+              name: admin.login, // Возвращаем логин администратора
+              role: admin.role_name  // Возвращаем роль "admin"
+            }
+          });
         }
-    
-        const user = result.rows[0];
+
+        // Если пользователь найден в таблице customers
+        const user = resultCustomers.rows[0];
+
+        // Возвращаем информацию о пользователе, включая его роль
         return res.status(200).json({
           message: 'Авторизация успешна',
           user: {
             id_customer: user.id_customer,
-            name: user.firstname_customer // или любое другое поле для имени
+            name: user.firstname_customer,
+            role: user.role_name  // Возвращаем роль пользователя
           }
         });
       } catch (error) {

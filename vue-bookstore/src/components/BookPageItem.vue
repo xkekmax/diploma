@@ -1,4 +1,6 @@
 <script setup>
+import { inject } from 'vue';
+const userRole = inject('userRole');
 
 defineProps({
   code: Number,
@@ -31,12 +33,22 @@ defineProps({
 <template>
 
     <div class="flex flex-col px-10">
-      <div class="flex flex-col gap-4 mb-4">
-        <h2 class="text-3xl font-bold ">{{ title }}</h2>
-        <a class="text-gray-600 border-b border-gray-200 w-fit hover:text-red-400
-            transition cursor-pointer" @click="onAuthorClick">
-            {{ author }}
-        </a>
+      <div class="flex justify-between">
+        <div class="flex flex-col gap-4 mb-4">
+          <h2 class="text-3xl font-bold ">{{ title }}</h2>
+          <a class="text-gray-600 border-b border-gray-200 w-fit hover:text-red-400
+              transition cursor-pointer" @click="onAuthorClick">
+              {{ author }}
+          </a>
+        </div>
+        <div v-if="userRole === 'admin'" class="text-right mt-4 pr-8">
+          <button
+            class="bg-orange-200 text-white px-4 py-2 rounded hover:bg-orange-300"
+            @click="router.push({ path: '/admin', query: { id: bookData.code_book } })"
+          >
+            Редактировать
+          </button>
+        </div>
       </div>
 
       <div class="flex gap-20">
@@ -51,7 +63,7 @@ defineProps({
                 Перейти к описанию
               </a>
 
-              <div class="flex gap-10 mt-8">
+              <div class="flex text-sm gap-8 mt-8">
                 <div class="flex flex-col gap-3 text-gray-400">
                   <p>Серия</p>
                   <p>Издательство</p>
@@ -71,7 +83,7 @@ defineProps({
            </div>
         </div>
 
-        <div class="flex flex-col gap-4 shadow-lg rounded-lg w-fit h-fit py-10 px-12">
+        <div class="flex flex-col gap-4 shadow-lg rounded-lg w-fit h-fit py-10 px-12 mt-10">
           <h2 class="text-2xl font-bold">{{ price }} руб.</h2>
           <div>
             <div class="flex items-end">

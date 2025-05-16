@@ -11,7 +11,6 @@ const props = defineProps({
 const bookData = ref(null);
 
 const { cart, addToCart, removeFromCart } = inject('cart');
-const addFavorite = inject('addFavorite');
 const searchQuery = inject('searchQuery');
 const router = useRouter();
 
@@ -101,7 +100,7 @@ watch(() => props.id, (newId) => {
 
 <template>
   <div v-auto-animate>
-      <BookPageItem v-if="bookData"
+    <BookPageItem v-if="bookData"
       :code="bookData.code_book"
       :title="bookData.book_name"
       :author="bookData.surname_author"
@@ -124,6 +123,6 @@ watch(() => props.id, (newId) => {
       :onClickAdd="toggleAddToCart"
       :onClickFavorite="toggleFavorite"
       :onAuthorClick="goToAuthorBooks" />
-    </div>
+  </div>
 </template>
 

@@ -43,7 +43,6 @@ const removeFromCart = (codeBook) => {
   }
 };
 
-
 watch(cart, () => {
   localStorage.setItem('cart', JSON.stringify(cart.value));
 }, { deep: true });
@@ -65,6 +64,7 @@ const onChangeSearchInput = debounce((event) => {
   searchQuery.value = event.target.value;
 }, 500);
 
+// Состояние авторизации и роли
 const isAuthorized = ref(!!localStorage.getItem('user_id'));
 const setUserAuthorized = (value) => {
   isAuthorized.value = value;
@@ -74,6 +74,12 @@ const userName = ref(localStorage.getItem('user_name') || '');
 const setUserName = (name) => {
   userName.value = name;
   localStorage.setItem('user_name', name);
+};
+
+const userRole = ref(localStorage.getItem('user_role') || '');  // Роль пользователя
+const setUserRole = (role) => {
+  userRole.value = role;
+  localStorage.setItem('user_role', role);
 };
 
 const addFavorite = async (item) => {
@@ -104,10 +110,13 @@ const addFavorite = async (item) => {
   }
 };
 
+// Передаем данные через provide
 provide('userName', userName);
 provide('setUserName', setUserName);
 provide('isAuthorized', isAuthorized);
 provide('setUserAuthorized', setUserAuthorized);
+provide('userRole', userRole);   // Роль пользователя
+provide('setUserRole', setUserRole); // Функция для изменения роли
 provide('searchQuery', searchQuery);
 provide('onChangeSearchInput', onChangeSearchInput);
 provide('addFavorite', addFavorite);
@@ -124,4 +133,3 @@ provide('addFavorite', addFavorite);
     <Footer/>
   </div>
 </template>
-
