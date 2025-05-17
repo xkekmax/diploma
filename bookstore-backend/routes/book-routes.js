@@ -1,23 +1,48 @@
-const Router = require('express')
-const router = new Router()
-const BookController = require('../controllers/book-controller')
-const UserController = require('../controllers/user-controller')
+const Router = require('express');
+const router = new Router();
+const path = require('path');
+const multer = require('multer');
+const BookController = require('../controllers/book-controller');
+const UserController = require('../controllers/user-controller');
 
-router.post('/register', UserController.addUser)
-router.post('/autorization', UserController.autorizeUser)
+// Настройка multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '..', 'vue-bookstore', 'public', 'books'));
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, `book-${uniqueSuffix}${path.extname(file.originalname)}`);
+  }
+});
+const upload = multer({ storage });
+
+router.post('/register', UserController.addUser);
+router.post('/autorization', UserController.autorizeUser);
 
 router.get('/user/:id', UserController.getUserById);
 router.put('/user/:id', UserController.updateUser);
-
 router.get('/orders/:id', UserController.getUserOrders);
 
-router.get('/books', BookController.getBooks)
-router.get('/book/:id', BookController.getBook)
+router.get('/books', BookController.getBooks);
+router.get('/book/:id', BookController.getBook);
 
-router.get('/favorites', BookController.getFavorites)
-router.post('/favorite', BookController.addFavorite)
-router.delete('/favorite/:id', BookController.deleteFavorite)
+// Передаём upload.single для загрузки файла обложки
+router.post('/book', BookController.addBook);
+router.post('/book/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'Файл не загружен' });
+  }
 
-router.post('/drawer', BookController.createDrawer)
+  // Сформировать путь в нужном формате
+  const filePath = `..\\..\\books\\${req.file.filename}`;
+  res.json({ filePath });
+});
 
-module.exports = router
+router.get('/favorites', BookController.getFavorites);
+router.post('/favorite', BookController.addFavorite);
+router.delete('/favorite/:id', BookController.deleteFavorite);
+
+router.post('/drawer', BookController.createDrawer);
+
+module.exports = router;

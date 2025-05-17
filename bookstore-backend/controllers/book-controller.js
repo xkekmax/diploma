@@ -8,15 +8,15 @@ class BookController {
             const searchQuery = req.query.title;
             if (searchQuery) {
                 // Если есть параметр title, выполняем поиск
-                const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
+                const books = await db.query('select code_book, book_name, name_author, cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                    'where book_name ILIKE $1 OR surname_author ILIKE $1', [`%${searchQuery}%`]);
+                    'where book_name ILIKE $1 OR name_author ILIKE $1', [`%${searchQuery}%`]);
                 return res.json(books.rows);
             }
             
             else if (section == 'title') {
                 // все книжки
-                const books = await db.query('select code_book, book_name, surname_author, ' +
+                const books = await db.query('select code_book, book_name, name_author, ' +
                     'cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
                     'order by code_book asc');
@@ -24,7 +24,7 @@ class BookController {
             }
             else if (section != 'title') {
                 // Если есть параметр section, вызываем сортировку
-                const books = await db.query('select code_book, book_name, surname_author, cover_art, price from public.books ' +
+                const books = await db.query('select code_book, book_name, name_author, cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
                     'where id_section = $1 order by code_book asc', [section]);
                 return res.json(books.rows);
@@ -41,7 +41,7 @@ class BookController {
         try {
             const idCustomer = req.query.userId;
             const favBooks = await db.query(
-                `SELECT id_fav, public.favorites.code_book, book_name, surname_author, cover_art, price 
+                `SELECT id_fav, public.favorites.code_book, book_name, name_author, cover_art, price 
                  FROM public.favorites 
                  INNER JOIN public.books ON public.books.code_book = public.favorites.code_book 
                  INNER JOIN public.authors ON public.authors.id_author = public.books.id_author 
@@ -121,7 +121,7 @@ class BookController {
     async getBook(req, res) {
         try {
             const id = req.params.id
-            const book = await db.query('select code_book, book_name, surname_author, surname_translator, ' +
+            const book = await db.query('select code_book, book_name, name_author, surname_translator, ' +
                 'surname_illustrator, publishing_name, series_name, cover_name, paper_name, section_name, page_count, ' +
                 'EXTRACT(YEAR FROM year_of_publication) AS year_of_publication, book_size, ' +
                 'book_weight, "ISBN", cover_art, price, description from public.books ' +
@@ -138,6 +138,116 @@ class BookController {
         } catch (error) {
             res.status(500).json({ message: 'Error retrieving books', error });
         }     
+    }
+
+    async addBook(req, res) {
+        try {
+            const {
+                book_name,
+                surname_author,
+                price,
+                publishing_name,
+                series_name,
+                surname_translator,
+                surname_illustrator,
+                cover_name,
+                page_count,
+                year_of_publication,
+                ISBN,
+                section_name,
+                book_size,
+                book_weight,
+                description
+            } = req.body;
+
+            // Получаем имя файла
+            let cover_art = req.body.cover_art || '';
+            if (cover_art) {
+                cover_art = `..\\..\\books\\${cover_art}`;
+            }
+
+            const getOrCreateId = async (table, column, value, idColumn) => {
+                if (typeof value !== 'string' || !value.trim()) return 1;
+
+                const trimmed = value.trim();
+                const existing = await db.query(
+                    `SELECT ${idColumn} FROM ${table} WHERE ${column} = $1`,
+                    [trimmed]
+                );
+
+                if (existing.rows.length > 0) {
+                    return existing.rows[0][idColumn];
+                }
+
+                const inserted = await db.query(
+                    `INSERT INTO ${table} (${column}) VALUES ($1) RETURNING ${idColumn}`,
+                    [trimmed]
+                );
+
+                return inserted.rows[0][idColumn];
+            };
+
+            const id_author = await getOrCreateId('authors', 'name_author', surname_author, 'id_author');
+            const id_series = await getOrCreateId('series', 'series_name', series_name, 'id_series');
+            const id_translator = await getOrCreateId('translators', 'surname_translator', surname_translator, 'id_translator');
+            const id_illustrator = await getOrCreateId('illustrators', 'surname_illustrator', surname_illustrator, 'id_illustrator');
+
+            const id_publishing = publishing_name;
+            const id_cover = cover_name;
+            const id_section = section_name;
+
+            console.log('Данные для вставки:', {
+                book_name: book_name.trim(),
+                id_author,
+                price,
+                cover_art,
+                id_publishing,
+                id_series,
+                id_translator,
+                id_illustrator,
+                id_cover,
+                page_count,
+                year_of_publication,
+                ISBN,
+                id_section,
+                book_size,
+                book_weight,
+                description
+            });
+
+            const values = [
+                book_name?.trim(), id_author, price, cover_art, id_publishing,
+                id_series, id_translator, id_illustrator, id_cover, page_count,
+                year_of_publication, ISBN, id_section, book_size, book_weight, description
+            ];
+
+            if (values.some(v => typeof v === 'undefined')) {
+                console.error('ОШИБКА: Один или несколько параметров undefined', values);
+                return res.status(400).json({ message: 'Ошибка: Недопустимое значение для INSERT', values });
+            }
+
+            const result = await db.query(
+                `INSERT INTO books (
+                    book_name, id_author, price, cover_art, id_publishing, id_series,
+                    id_translator, id_illustrator, id_cover, page_count, year_of_publication,
+                    "ISBN", id_section, book_size, book_weight, id_paper, description
+                ) VALUES (
+                    $1, $2, $3, $4, $5, $6,
+                    $7, $8, $9, $10, $11,
+                    $12, $13, $14, $15, $16, $17
+                ) RETURNING *`,
+                [
+                    book_name.trim(), id_author, price, cover_art, id_publishing, id_series,
+                    id_translator, id_illustrator, id_cover, page_count, year_of_publication,
+                    ISBN, id_section, book_size, book_weight, 1, description
+                ]
+            );
+
+            res.status(201).json({ message: 'Книга добавлена', book: result.rows[0] });
+       } catch (error) {
+            console.error('Ошибка при SQL-запросе:', error);
+            res.status(500).json({ message: 'Ошибка в SQL', details: error.message });
+        }
     }
 }
 

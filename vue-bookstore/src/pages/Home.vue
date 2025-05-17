@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { onMounted, ref, watch, provide, inject } from 'vue';
+import { onMounted, ref, watch, inject } from 'vue';
 import axios from 'axios';
 import BookList from '../components/BookList.vue'
 import Swiper from '@/components/Swiper.vue';

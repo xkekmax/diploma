@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import AlertMessage from '../components/AlertMessage.vue';
@@ -34,21 +34,30 @@ const book = ref({
 const imagePreview = ref(null);
 
 onMounted(async () => {
+  const savedBookData = sessionStorage.getItem('bookFormData');
+  if (savedBookData && !route.query.id) {
+    book.value = JSON.parse(savedBookData);
+    imagePreview.value = book.value.cover_art ? `/books/${book.value.cover_art}` : null;
+  }
+
   bookId.value = route.query.id;
   if (bookId.value) {
     isEdit.value = true;
     const { data } = await axios.get(`http://localhost:8080/witch/book/${bookId.value}`);
     book.value = data;
-    imagePreview.value = book.value.cover_art;
+    imagePreview.value = book.value.cover_art ? `/books/${book.value.cover_art}` : null;
   }
 });
+
+const fileCover = ref(null);
 
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
+    fileCover.value = file;
+    book.value.cover_art = file.name;
     const reader = new FileReader();
     reader.onload = (e) => {
-      book.value.cover_art = e.target.result;
       imagePreview.value = e.target.result;
     };
     reader.readAsDataURL(file);
@@ -59,55 +68,66 @@ const handleImageUpload = (event) => {
 const isNumeric = (value) => /^[0-9]*$/.test(value);
 
 const saveBook = async () => {
-  // Проверка: все поля заполнены
   const requiredFields = [
-    'book_name',
-    'surname_author',
-    'price',
-    'cover_art',
-    'publishing_name',
-    'series_name',
-    'surname_translator',
-    'surname_illustrator',
-    'cover_name',
-    'page_count',
-    'year_of_publication',
-    'ISBN',
-    'section_name',
-    'book_size',
-    'book_weight',
-    'description'
+    'book_name', 'surname_author', 'price', 'publishing_name',
+    'cover_name', 'page_count', 'year_of_publication', 'ISBN',
+    'section_name', 'book_size', 'book_weight', 'description'
   ];
 
   const emptyFields = requiredFields.filter(field => !book.value[field]?.toString().trim());
-
   if (emptyFields.length > 0) {
     alertMessage.value = 'Пожалуйста, заполните все поля перед сохранением.';
     showAlert.value = true;
     return;
   }
 
-  // Проверка числовых полей
-  if (!isNumeric(book.value.price) || !isNumeric(book.value.page_count) || !isNumeric(book.value.book_weight)) {
-    alertMessage.value = 'Поля "Цена", "Количество страниц" и "Вес книги" должны содержать только цифры.';
+  if (!isNumeric(book.value.price) || !isNumeric(book.value.page_count)) {
+    alertMessage.value = 'Поля "Цена" и "Количество страниц" должны содержать только цифры.';
     showAlert.value = true;
     return;
   }
 
+  // Приведение к нужным типам
+  book.value.price = Number(book.value.price);
+  book.value.page_count = Number(book.value.page_count);
+  book.value.publishing_name = book.value.publishing_name ? Number(book.value.publishing_name) : null;
+  book.value.cover_name = book.value.cover_name ? Number(book.value.cover_name) : null;
+  book.value.section_name = book.value.section_name ? Number(book.value.section_name) : null;
+  book.value.year_of_publication = `${book.value.year_of_publication}-01-01`; // YYYY-MM-DD
+  if (!String(book.value.surname_translator).trim()) book.value.surname_translator = null;
+  if (!String(book.value.surname_illustrator).trim()) book.value.surname_illustrator = null;
+
   try {
     if (isEdit.value) {
+      console.log('📦 Данные перед отправкой:', JSON.stringify(book.value, null, 2));
       await axios.put(`http://localhost:8080/witch/book/${bookId.value}`, book.value);
       alert('Книга обновлена!');
     } else {
+      console.log('📦 Данные перед отправкой:', JSON.stringify(book.value, null, 2));
       await axios.post('http://localhost:8080/witch/book', book.value);
       alert('Книга добавлена!');
     }
+
+    sessionStorage.removeItem('bookFormData');
     router.push('/');
-  } catch (err) {
-    alert('Ошибка при сохранении книги');
-    console.error(err);
+  } catch (error) {
+    if (error.response) {
+      console.error('Ошибка на сервере:', error.response.data);
+      alert('Ошибка при сохранении книги: ' + error.response.data.message || 'Неизвестная ошибка');
+    } else if (error.request) {
+      console.error('Нет ответа от сервера:', error.request);
+      alert('Нет ответа от сервера');
+    } else {
+      console.error('Ошибка при настройке запроса:', error.message);
+      alert('Ошибка при отправке запроса');
+    }
   }
 };
+
+watch(book, (newVal) => {
+  sessionStorage.setItem('bookFormData', JSON.stringify(newVal));
+}, { deep: true });
+
 </script>
 
 <template>
@@ -147,15 +167,29 @@ const saveBook = async () => {
         <input v-model="book.book_name" placeholder="Название" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" required />
         <input v-model="book.surname_author" placeholder="Автор" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <input v-model="book.price" placeholder="Цена" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
-        <input v-model="book.publishing_name" placeholder="Издательство" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
+        <select v-model="book.publishing_name" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2">
+          <option disabled value="">Издательство</option>
+          <option value=1>АСТ</option>
+          <option value=2>Эксмо</option>
+          <option value=3>Лайвбук</option>
+        </select>
         <input v-model="book.series_name" placeholder="Серия" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <input v-model="book.surname_translator" placeholder="Переводчик" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <input v-model="book.surname_illustrator" placeholder="Художник" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
-        <input v-model="book.cover_name" placeholder="Тип обложки" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
+        <select v-model="book.cover_name" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2">
+          <option disabled value="">Тип обложки</option>
+          <option value=1>Твёрдый переплёт</option>
+          <option value=2>Мягкий переплёт</option>
+        </select>
         <input v-model="book.page_count" placeholder="Количество страниц" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <input v-model="book.year_of_publication" placeholder="Год издания" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <input v-model="book.ISBN" placeholder="ISBN" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
-        <input v-model="book.section_name" placeholder="Раздел" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
+        <select v-model="book.section_name" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2">
+          <option disabled value="">Раздел</option>
+          <option value=1>Проза</option>
+          <option value=2>Фантастика</option>
+          <option value=3>Фэнтези</option>
+        </select>
         <input v-model="book.book_size" placeholder="Размер книги" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <input v-model="book.book_weight" placeholder="Вес книги" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <textarea v-model="book.description" placeholder="Описание" class="border p-2 rounded col-span-1 md:col-span-2 min-h-[100px] focus:ring-red-200 outline-none focus:ring-2" />

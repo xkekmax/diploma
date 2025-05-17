@@ -21,8 +21,8 @@ const isAdded = computed(() =>
 const isFavorite = computed(() => bookData.value?.isFavorite);
 
 const goToAuthorBooks = () => {
-  if (searchQuery && bookData.value?.surname_author) {
-    searchQuery.value = bookData.value.surname_author;
+  if (searchQuery && bookData.value?.name_author) {
+    searchQuery.value = bookData.value.name_author;
     router.push('/');
   }
 };
@@ -103,7 +103,7 @@ watch(() => props.id, (newId) => {
     <BookPageItem v-if="bookData"
       :code="bookData.code_book"
       :title="bookData.book_name"
-      :author="bookData.surname_author"
+      :author="bookData.name_author"
       :imageUrl="bookData.cover_art"
       :price="bookData.price"
       :publishing="bookData.publishing_name"
