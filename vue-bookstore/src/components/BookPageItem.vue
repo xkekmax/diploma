@@ -26,16 +26,18 @@ defineProps({
   isAdded: Boolean,
   onClickAdd: Function,
   onClickFavorite: Function,
-  onAuthorClick: Function
+  onAuthorClick: Function,
+  onEditClick: Function
 })
+
 </script>
 
 <template>
 
-    <div class="flex flex-col px-10">
+    <div class="flex flex-col px-10 ">
       <div class="flex justify-between">
         <div class="flex flex-col gap-4 mb-4">
-          <h2 class="text-3xl font-bold ">{{ title }}</h2>
+          <h2 class="text-3xl font-bold text-orange-900">{{ title }}</h2>
           <a class="text-gray-600 border-b border-gray-200 w-fit hover:text-red-400
               transition cursor-pointer" @click="onAuthorClick">
               {{ author }}
@@ -44,7 +46,7 @@ defineProps({
         <div v-if="userRole === 'admin'" class="text-right mt-4 pr-8">
           <button
             class="bg-orange-200 text-white px-4 py-2 rounded hover:bg-orange-300"
-            @click="router.push({ path: '/admin', query: { id: bookData.code_book } })"
+            @click="onEditClick"
           >
             Редактировать
           </button>
@@ -63,19 +65,25 @@ defineProps({
                 Перейти к описанию
               </a>
 
-              <div class="flex text-sm gap-8 mt-8">
-                <div class="flex flex-col gap-3 text-gray-400">
-                  <p>Серия</p>
-                  <p>Издательство</p>
-                  <p>Переплет</p>
-                  <p>Страниц</p>
-                  <p>Год, тираж</p>
+              <div class="flex flex-col text-sm gap-3 mt-8">
+                <div v-if="series !== '_'" class="flex">
+                  <p class="text-gray-400 min-w-[140px] flex-shrink-0">Серия:</p>
+                  <p class="break-words">{{ series }}</p>
                 </div>
-                <div class="flex flex-col gap-3">
-                  <p>{{ series }}</p>
-                  <p>{{ publishing }}</p>
+                <div class="flex">
+                  <p class="text-gray-400 min-w-[140px] flex-shrink-0">Издательство:</p>
+                  <p class="break-words">{{ publishing }}</p>
+                </div>
+                <div class="flex">
+                  <p class="text-gray-400 min-w-[140px] flex-shrink-0">Переплет:</p>
                   <p>{{ cover }}</p>
+                </div>
+                <div class="flex">
+                  <p class="text-gray-400 min-w-[140px] flex-shrink-0">Страниц:</p>
                   <p>{{ pageCount }}</p>
+                </div>
+                <div class="flex">
+                  <p class="text-gray-400 min-w-[140px] flex-shrink-0">Год, тираж:</p>
                   <p>{{ year }}</p>
                 </div>
               </div>
@@ -83,7 +91,7 @@ defineProps({
            </div>
         </div>
 
-        <div class="flex flex-col gap-4 shadow-lg rounded-lg w-fit h-fit py-10 px-12 mt-10">
+        <div class="flex flex-col gap-4 shadow-lg rounded-lg h-fit py-6 px-8 mt-10">
           <h2 class="text-2xl font-bold">{{ price }} руб.</h2>
           <div>
             <div class="flex items-end">
@@ -120,9 +128,9 @@ defineProps({
           <div class="flex flex-col gap-3 text-gray-400">
             <p>Код</p>
             <p>Издательство</p>
-            <p>Серия</p>
+            <p v-if="series !== '_'">Серия</p>
             <p>Автор</p>
-            <p>Переводчик</p>
+            <p v-if="translator">Переводчик</p>
             <p>Переплет</p>
             <p>Кол-во страниц</p>
             <p>Год издания</p>
@@ -132,13 +140,13 @@ defineProps({
             <p>Вес</p>
           </div>
           <div class="flex flex-col gap-3">
-            <p>{{ ISBN }}</p>
+            <p>{{ code }}</p>
             <p>{{ publishing }}</p>
-            <p>{{ series }}</p>
+            <p v-if="series !== '_'">{{ series }}</p>
             <a class="hover:text-red-400 transition cursor-pointer" @click="onAuthorClick">
               {{ author }}
             </a>
-            <p>{{ translator }}</p>
+            <p v-if="translator">{{ translator }}</p>
             <p>{{ cover }}</p>
             <p>{{ pageCount }}</p>
             <p>{{ year }}</p>

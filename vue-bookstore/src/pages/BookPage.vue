@@ -87,6 +87,15 @@ const loadBook = async (id) => {
   }
 };
 
+const goToEditPage = () => {
+  if (bookData.value) {
+    router.push({
+      path: '/admin',
+      query: { id: bookData.value.code_book }
+    });
+  }
+};
+
 // Загружаем при первом монтировании
 onMounted(() => {
   loadBook(props.id);
@@ -122,7 +131,8 @@ watch(() => props.id, (newId) => {
       :isAdded="isAdded"
       :onClickAdd="toggleAddToCart"
       :onClickFavorite="toggleFavorite"
-      :onAuthorClick="goToAuthorBooks" />
+      :onAuthorClick="goToAuthorBooks"
+      :onEditClick="goToEditPage"/>
   </div>
 </template>
 

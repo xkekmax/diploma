@@ -19,7 +19,7 @@ class BookController {
                 const books = await db.query('select code_book, book_name, name_author, ' +
                     'cover_art, price from public.books ' +
                     'inner join public.authors on public.authors.id_author = public.books.id_author ' +
-                    'order by code_book asc');
+                    'order by code_book desc');
                 return res.json(books.rows);
             }
             else if (section != 'title') {
@@ -144,7 +144,7 @@ class BookController {
         try {
             const {
                 book_name,
-                surname_author,
+                name_author,
                 price,
                 publishing_name,
                 series_name,
@@ -152,7 +152,6 @@ class BookController {
                 surname_illustrator,
                 cover_name,
                 page_count,
-                year_of_publication,
                 ISBN,
                 section_name,
                 book_size,
@@ -162,6 +161,9 @@ class BookController {
 
             // Получаем имя файла
             let cover_art = req.body.cover_art || '';
+
+            let year_of_publication = `${req.body.year_of_publication}-01-01`; // YYYY-MM-DD
+
             if (cover_art) {
                 cover_art = `..\\..\\books\\${cover_art}`;
             }
@@ -187,7 +189,7 @@ class BookController {
                 return inserted.rows[0][idColumn];
             };
 
-            const id_author = await getOrCreateId('authors', 'name_author', surname_author, 'id_author');
+            const id_author = await getOrCreateId('authors', 'name_author', name_author, 'id_author');
             const id_series = await getOrCreateId('series', 'series_name', series_name, 'id_series');
             const id_translator = await getOrCreateId('translators', 'surname_translator', surname_translator, 'id_translator');
             const id_illustrator = await getOrCreateId('illustrators', 'surname_illustrator', surname_illustrator, 'id_illustrator');
@@ -246,6 +248,87 @@ class BookController {
             res.status(201).json({ message: 'Книга добавлена', book: result.rows[0] });
        } catch (error) {
             console.error('Ошибка при SQL-запросе:', error);
+            res.status(500).json({ message: 'Ошибка в SQL', details: error.message });
+        }
+    }
+
+    async updateBook(req, res) {
+        try {
+            const { id } = req.params;
+            const {
+                book_name,
+                name_author,
+                price,
+                publishing_name,
+                series_name,
+                surname_translator,
+                surname_illustrator,
+                cover_name,
+                page_count,
+                ISBN,
+                section_name,
+                book_size,
+                book_weight,
+                description
+            } = req.body;
+
+            // Получаем имя файла
+            let cover_art = req.body.cover_art || '';
+
+            let year_of_publication = `${req.body.year_of_publication}-01-01`; // YYYY-MM-DD
+
+            if (cover_art) {
+                cover_art = `..\\..\\books\\${cover_art}`;
+            }
+
+            const getOrCreateId = async (table, column, value, idColumn) => {
+                if (typeof value !== 'string' || !value.trim()) return 1;
+
+                const trimmed = value.trim();
+                const existing = await db.query(
+                    `SELECT ${idColumn} FROM ${table} WHERE ${column} = $1`,
+                    [trimmed]
+                );
+
+                if (existing.rows.length > 0) {
+                    return existing.rows[0][idColumn];
+                }
+
+                const inserted = await db.query(
+                    `INSERT INTO ${table} (${column}) VALUES ($1) RETURNING ${idColumn}`,
+                    [trimmed]
+                );
+
+                return inserted.rows[0][idColumn];
+            };
+
+            const id_author = await getOrCreateId('authors', 'name_author', name_author, 'id_author');
+            const id_series = await getOrCreateId('series', 'series_name', series_name, 'id_series');
+            const id_translator = await getOrCreateId('translators', 'surname_translator', surname_translator, 'id_translator');
+            const id_illustrator = await getOrCreateId('illustrators', 'surname_illustrator', surname_illustrator, 'id_illustrator');
+
+            const id_publishing = publishing_name;
+            const id_cover = cover_name;
+            const id_section = section_name;
+
+            // Обновляем запись в базе
+            const result = await db.query(
+                `UPDATE books SET
+                    book_name = $1, id_author = $2, price = $3, cover_art = $4, id_publishing = $5,
+                    id_series = $6, id_translator = $7, id_illustrator = $8, id_cover = $9, page_count = $10,
+                    year_of_publication = $11, "ISBN" = $12, id_section = $13, book_size = $14, book_weight = $15, description = $16
+                WHERE code_book = $17 RETURNING *`,
+                [
+                    book_name.trim(), id_author, price, cover_art, id_publishing, id_series,
+                    id_translator, id_illustrator, id_cover, page_count, year_of_publication,
+                    ISBN, id_section, book_size, book_weight, description, id
+                ]
+            );
+
+            res.status(200).json({ message: 'Книга обновлена', book: result.rows[0] });
+        } catch (error) {
+            console.error('Ошибка при SQL-запросе:', error.message);
+            console.error('Стек ошибки:', error.stack); // Вывод стека ошибки для отладки
             res.status(500).json({ message: 'Ошибка в SQL', details: error.message });
         }
     }

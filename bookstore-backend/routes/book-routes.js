@@ -38,6 +38,7 @@ router.post('/book/upload', upload.single('image'), (req, res) => {
   const filePath = `..\\..\\books\\${req.file.filename}`;
   res.json({ filePath });
 });
+router.put('/book/:id', BookController.updateBook);
 
 router.get('/favorites', BookController.getFavorites);
 router.post('/favorite', BookController.addFavorite);
