@@ -332,6 +332,17 @@ class BookController {
             res.status(500).json({ message: 'Ошибка в SQL', details: error.message });
         }
     }
+
+    async deleteBook (req, res) {
+        const codeBook = req.params.id;
+        try {
+            await db.query('DELETE FROM books WHERE code_book = $1', [codeBook]);
+            res.status(200).json({ message: 'Книга успешно удалена' });
+        } catch (error) {
+            console.error('Ошибка при удалении книги:', error);
+            res.status(500).json({ error: 'Не удалось удалить книгу' });
+        }
+    }
 }
 
 module.exports = new BookController();

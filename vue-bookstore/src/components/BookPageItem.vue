@@ -43,16 +43,21 @@ defineProps({
               {{ author }}
           </a>
         </div>
-        <div v-if="userRole === 'admin'" class="text-right mt-4 pr-8">
+       <div v-if="userRole === 'admin'" class="text-right mt-4 pr-8 flex flex-col">
           <button
             class="bg-orange-200 text-white px-4 py-2 rounded hover:bg-orange-300"
             @click="onEditClick"
           >
             Редактировать
           </button>
+          <button
+            class="bg-red-300 text-white px-4 py-2 mt-2 rounded hover:bg-red-400"
+            @click="$emit('requestDelete')"
+          >
+            Удалить
+          </button>
         </div>
       </div>
-
       <div class="flex gap-20">
         <div class="flex items-top gap-12 mt-2">
            <img :src="imageUrl" :alt="title"

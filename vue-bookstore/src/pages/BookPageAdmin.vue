@@ -34,11 +34,6 @@ const book = ref({
 const imagePreview = ref(null);
 
 onMounted(async () => {
-  // const savedBookData = sessionStorage.getItem('bookFormData');
-  // if (savedBookData && !route.query.id) {
-  //   book.value = JSON.parse(savedBookData);
-  //   imagePreview.value = book.value.cover_art ? `/books/${book.value.cover_art}` : null;
-  // }
   if (!route.query.id) {
     sessionStorage.removeItem('bookFormData');
   }
@@ -154,7 +149,10 @@ const saveBook = async () => {
 
 const handleCloseAlert = () => {
   showAlert.value = false;
-  if (!isEdit.value && alertMessage.value === 'Книга добавлена!') {
+  if (
+    alertMessage.value === 'Книга добавлена!' ||
+    alertMessage.value === 'Книга обновлена!'
+  ) {
     router.push('/');
   }
 };
@@ -229,7 +227,7 @@ watch(book, (newVal) => {
         <input v-model="book.book_weight" placeholder="Вес книги" class="border p-2 rounded focus:ring-red-200 outline-none focus:ring-2" />
         <textarea v-model="book.description" placeholder="Описание" class="border p-2 rounded col-span-1 md:col-span-2 min-h-[100px] focus:ring-red-200 outline-none focus:ring-2" />
 
-        <AlertMessage v-if="showAlert" :message="alertMessage" @close="handleCloseAlert"/>
+        <AlertMessage v-if="showAlert" :message="alertMessage" :isDelete="false" @close="handleCloseAlert"/>
 
         <button type="submit" class="col-span-1 md:col-span-2 bg-red-400 text-white py-3 rounded-md hover:bg-red-500 transition mx-60">
           {{ isEdit ? 'Сохранить изменения' : 'Добавить книгу' }}

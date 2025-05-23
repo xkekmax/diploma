@@ -3,6 +3,9 @@ import { onMounted, ref, inject, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import BookPageItem from '../components/BookPageItem.vue';
+import AlertMessage from '../components/AlertMessage.vue';
+
+const showAlert = ref(false);
 
 const props = defineProps({
   id: String
@@ -87,6 +90,15 @@ const loadBook = async (id) => {
   }
 };
 
+const deleteBook = async () => {
+  try {
+    await axios.delete(`http://localhost:8080/witch/book/${bookData.value.code_book}`);
+    router.push('/');
+  } catch (error) {
+    console.error('Ошибка при удалении книги:', error);
+  }
+};
+
 const goToEditPage = () => {
   if (bookData.value) {
     router.push({
@@ -132,7 +144,16 @@ watch(() => props.id, (newId) => {
       :onClickAdd="toggleAddToCart"
       :onClickFavorite="toggleFavorite"
       :onAuthorClick="goToAuthorBooks"
-      :onEditClick="goToEditPage"/>
+      :onEditClick="goToEditPage"
+      @requestDelete="showAlert = true"/>
+
+      <AlertMessage
+        v-if="showAlert"
+        :message="`Вы уверены, что хотите удалить книгу '${bookData?.book_name}'?`"
+        :isDelete="true"
+        @confirm="deleteBook"
+        @cancel="showAlert = false"
+      />
   </div>
 </template>
 

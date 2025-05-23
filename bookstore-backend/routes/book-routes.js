@@ -39,6 +39,7 @@ router.post('/book/upload', upload.single('image'), (req, res) => {
   res.json({ filePath });
 });
 router.put('/book/:id', BookController.updateBook);
+router.delete('/book/:id', BookController.deleteBook);
 
 router.get('/favorites', BookController.getFavorites);
 router.post('/favorite', BookController.addFavorite);
