@@ -12,6 +12,8 @@ const props = defineProps({
   isAdded: Boolean,
   onClickAdd: Function,
   onClickFavorite: Function,
+  quantity: Number,
+  showQuantity: Boolean
 });
 
 const handleFavoriteClick = (event) => {
@@ -38,6 +40,12 @@ const handleAuthorClick = (event) => {
 <template>
   <router-link :to="{ name: 'BookPage', params: { id: props.code } }">
     <div class="relative bg-white border border-red-100 rounded-r-lg px-4 py-6  cursor-pointer transition hover:-translate-y-2 hover:shadow-xl">
+      <!-- Показываем количество, только если showQuantity -->
+      <div v-if="showQuantity"
+            class="text-xs text-gray-500 border border-red-400 rounded-full w-6 h-6 flex
+                   items-center justify-center select-none">
+        {{ quantity }}
+      </div>
       <img v-if="onClickFavorite" @click="handleFavoriteClick" :src="isFavorite ? '/like-4.svg' : '/like-3.svg'" alt="Like" class="w-7"/>
       <img :src="imageUrl" :alt="title" class="mx-auto w-8/12" />
 

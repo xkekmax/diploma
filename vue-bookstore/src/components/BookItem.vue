@@ -10,6 +10,7 @@ const props = defineProps({
   author: String,
   imageUrl: String,
   price: Number,
+  quantity: Number
 });
 
 const router = useRouter();
@@ -49,6 +50,11 @@ const handleRemoveClick = (event, codeBook) => {
         />
       </div>
       <b>{{ price }} руб.</b>
+        <div class="flex items-center gap-2 mt-2">
+          <button @click.stop="$emit('decrease', code)" class="px-2 bg-gray-200 rounded">−</button>
+          <span>{{ props.quantity }}</span>
+          <button @click.stop="$emit('increase', code)" class="px-2 bg-gray-200 rounded">+</button>
+        </div>
     </div>
   </div>
 </template>

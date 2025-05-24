@@ -16,7 +16,9 @@ const cart = ref([]);
 
 const drawerOpen = ref(false);
 
-const price = computed(() => cart.value.reduce((acc, item) => acc + item.price, 0));
+const price = computed(() =>
+  cart.value.reduce((acc, item) => acc + item.price * item.quantity, 0)
+);
 const salePrice = computed(() => Math.round((price.value * 5) / 100));
 const totalPrice = computed(() => price.value - salePrice.value);
 
@@ -29,17 +31,24 @@ const openDrawer = () => {
 };
 
 const addToCart = (item) => {
-  cart.value.push(item);
-  item.isAdded = true;
+  const existingItem = cart.value.find(i => i.code_book === item.code_book);
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.value.push({ ...item, quantity: 1 });
+    item.isAdded = true;
+  }
 };
 
 const removeFromCart = (codeBook) => {
   const index = cart.value.findIndex((i) => i.code_book === codeBook);
   if (index !== -1) {
-    cart.value[index].isAdded = false;
-    cart.value.splice(index, 1);
-  } else {
-    console.warn('Товар не найден в корзине для удаления');
+    if (cart.value[index].quantity > 1) {
+      cart.value[index].quantity -= 1;
+    } else {
+      cart.value[index].isAdded = false;
+      cart.value.splice(index, 1);
+    }
   }
 };
 
@@ -56,7 +65,7 @@ provide('cart', {
 });
 
 const { loadCartFromLocalStorage } = useCartSync(cart);
-onMounted(loadCartFromLocalStorage); // <---- Вот это нужно
+onMounted(loadCartFromLocalStorage);
 
 /* Корзина (end) */
 

@@ -172,12 +172,13 @@ class UserController {
 
     async getUserOrders(req, res) {
       const userId = req.params.id;
-    
+
       try {
         const query = `
           SELECT o.id_order, o.total_price, o.order_date, 
-                 b.code_book, b.book_name, b.cover_art, b.price, 
-                 a.surname_author
+                b.code_book, b.book_name, b.cover_art, b.price, 
+                a.name_author,
+                oi.quantity
           FROM orders o
           LEFT JOIN order_items oi ON o.id_order = oi.id_order
           LEFT JOIN books b ON oi.code_book = b.code_book
@@ -186,8 +187,8 @@ class UserController {
           ORDER BY o.order_date DESC
         `;
         const result = await db.query(query, [userId]);
-    
-        // Группируем книги по заказам
+
+        // Группируем книги по заказам и учитываем quantity
         const orders = result.rows.reduce((acc, row) => {
           let order = acc.find(o => o.id_order === row.id_order);
           if (!order) {
@@ -204,18 +205,18 @@ class UserController {
             book_name: row.book_name,
             cover_art: row.cover_art,
             price: row.price,
-            surname_author: row.surname_author
+            name_author: row.name_author,
+            quantity: row.quantity  // добавляем количество экземпляров книги
           });
           return acc;
         }, []);
-    
+
         res.status(200).json(orders);
       } catch (err) {
         console.error('Ошибка при получении заказов:', err);
         res.status(500).json({ message: 'Ошибка при получении заказов' });
       }
-    }    
-    
+    }
 }
 
 module.exports = new UserController();

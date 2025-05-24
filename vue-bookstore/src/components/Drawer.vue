@@ -29,7 +29,7 @@ const createOrder = async () => {
     const id_customer = localStorage.getItem('user_id')
 
     const { data } = await axios.post('http://localhost:8080/witch/drawer', {
-      items: cart.value,
+      items: cart.value.map(({ code_book, quantity }) => ({ code_book, quantity })),
       totalPrice: props.totalPrice,
       id_customer: Number(id_customer),
     });

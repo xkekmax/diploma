@@ -80,15 +80,24 @@ class BookController {
 
     async createDrawer(req, res) {
         try {
-          const { items, totalPrice, id_customer } = req.body;
-      
-          if (!items || items.length === 0) {
-            return res.status(400).json({ message: 'Корзина пуста.' });
-          }
-      
-          if (!id_customer) {
-            return res.status(400).json({ message: 'Не передан идентификатор пользователя.' });
-          }
+           const { items, totalPrice, id_customer } = req.body;
+
+            for (const item of items) {
+            const bookCheck = await db.query('SELECT code_book FROM public.books WHERE code_book = $1', [item.code_book]);
+            if (bookCheck.rows.length === 0) {
+                return res.status(400).json({ message: `Книга с кодом ${item.code_book} не найдена` });
+            }
+            }
+
+           console.log('Создание заказа:', { items, totalPrice, id_customer }); // <-- логируем
+
+           if (!items || items.length === 0) {
+           return res.status(400).json({ message: 'Корзина пуста.' });
+           }
+
+           if (!id_customer) {
+           return res.status(400).json({ message: 'Не передан идентификатор пользователя.' });
+           }
       
           // Сохраняем заказ в таблицу orders с привязкой к пользователю
           const orderResult = await db.query(
@@ -100,23 +109,24 @@ class BookController {
       
           const orderId = orderResult.rows[0].id_order;
       
-          // Добавляем книги в order_items
+          // Добавляем книги в order_items с количеством
           const itemQueries = items.map(item =>
             db.query(
-              `INSERT INTO public.order_items (id_order, code_book)
-               VALUES ($1, $2)`,
-              [orderId, item.code_book]
+                `INSERT INTO public.order_items (id_order, code_book, quantity)
+                VALUES ($1, $2, $3)`,
+                [orderId, item.code_book, item.quantity]
             )
           );
+
           await Promise.all(itemQueries);
       
           return res.json({ message: 'Заказ успешно создан.', orderId });
       
         } catch (error) {
-          console.error('Ошибка при создании заказа:', error);
-          res.status(500).json({ message: 'Ошибка при создании заказа', error });
+            console.error('Ошибка при создании заказа:', error);
+            res.status(500).json({ message: 'Ошибка при создании заказа', error: error.message || error });
         }
-      }         
+    }         
     
     async getBook(req, res) {
         try {

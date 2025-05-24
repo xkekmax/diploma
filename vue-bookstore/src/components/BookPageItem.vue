@@ -92,7 +92,7 @@ defineProps({
                   <p>{{ year }}</p>
                 </div>
               </div>
-              <a class="mt-4 hover:text-red-400 transition" href="#description">Перейти к характеристикам ></a>
+              <a class="mt-4 hover:text-red-400 transition" href="#specifications">Перейти к характеристикам ></a>
            </div>
         </div>
 
@@ -108,7 +108,7 @@ defineProps({
               <h2 class="ml-2 text-gray-600 ">Бонусы за покупку</h2>
             </div>
           </div>
-          <div class="flex justify-between mt-2">
+          <div class="flex justify-between mt-2" id="description">
             <button
               @click="onClickAdd"
               class="text-white bg-red-400 hover:bg-red-500 w-max h-max text-xl focus:outline-none font-medium rounded-lg px-12 py-2"
@@ -124,7 +124,7 @@ defineProps({
       </div>
 
       <div class="flex flex-col gap-4 mt-12">
-        <div class="text-2xl font-medium" id="description">
+        <div class="text-2xl font-medium" id="specifications">
           Описание и характеристики
         </div>
         <p class="w-3/5">{{ description }}</p>
