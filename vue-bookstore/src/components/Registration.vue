@@ -19,6 +19,8 @@ const phone = ref('');
 const login = ref('');
 const password = ref('');
 
+const isAdmin = ref(false);
+
 // Alert message state
 const showAlert = ref(false);
 const alertMessage = ref('');
@@ -31,13 +33,15 @@ watch(
   () => props.userData,
   (newVal) => {
     if (newVal) {
-      lastName.value = newVal.surname_customer;
-      firstName.value = newVal.firstname_customer;
-      patronymic.value = newVal.patronymic_customer || '';
-      birhday.value = newVal.date_of_birthday ? newVal.date_of_birthday.slice(0, 10) : '';
-      email.value = newVal.email;
+      isAdmin.value = newVal.role_name === 'admin' || newVal.is_admin === true;
+
+      lastName.value = newVal.surname_customer || newVal.surname_admin || '';
+      firstName.value = newVal.firstname_customer || newVal.firstname_admin || '';
+      patronymic.value = newVal.patronymic_customer || newVal.patronymic_admin || '';
+      birhday.value = (newVal.date_of_birthday || '').slice(0, 10);
+      email.value = newVal.email || '';
       phone.value = newVal.phone || '';
-      login.value = newVal.login;
+      login.value = newVal.login || '';
     }
   },
   { immediate: true }
@@ -45,36 +49,58 @@ watch(
 
 const registerOrUpdateUser = async () => {
   try {
-    const userData = {
-      surname_customer: lastName.value,
-      firstname_customer: firstName.value,
-      patronymic_customer: patronymic.value ? patronymic.value : null,
-      date_of_birthday: birhday.value,
-      login: login.value,
-      password: password.value,
-      email: email.value,
-      phone: phone.value,
-      id_role: 2
-    };
+    const userId = localStorage.getItem('user_id');
 
     if (props.editMode) {
-      const userId = localStorage.getItem('user_id');
-      await axios.put(`http://localhost:8080/witch/user/${userId}`, userData);
-      alertMessage.value = 'Данные успешно обновлены!';
-      if (setUserName) {
-        setUserName(firstName.value);
+      if (isAdmin.value) {
+        const adminData = {
+          surname_admin: lastName.value,
+          firstname_admin: firstName.value,
+          patronymic_admin: patronymic.value || null,
+          date_of_birthday: birhday.value,
+          email: email.value
+        };
+
+        await axios.put(`http://localhost:8080/witch/admin/${userId}`, adminData);
+      } else {
+        const userData = {
+          surname_customer: lastName.value,
+          firstname_customer: firstName.value,
+          patronymic_customer: patronymic.value || null,
+          date_of_birthday: birhday.value,
+          email: email.value,
+          phone: phone.value || null,
+        };
+
+        await axios.put(`http://localhost:8080/witch/user/${userId}`, userData);
       }
+
+      alertMessage.value = 'Данные успешно обновлены!';
+      if (setUserName) setUserName(firstName.value);
+      showAlert.value = true;
     } else {
+      // регистрация покупателя — оставляем без изменений
+      const userData = {
+        surname_customer: lastName.value,
+        firstname_customer: firstName.value,
+        patronymic_customer: patronymic.value || null,
+        date_of_birthday: birhday.value,
+        login: login.value,
+        password: password.value,
+        email: email.value,
+        phone: phone.value || null,
+        id_role: 2 // например, роль покупателя
+      };
+
       await axios.post('http://localhost:8080/witch/register', userData);
-      alertMessage.value = 'Регистрация успешна!';
+
+      alertMessage.value = 'Регистрация прошла успешно!';
+      showAlert.value = true;
     }
-
-    showAlert.value = true;
-
   } catch (error) {
-    console.error('Ошибка:', error);
-    alertMessage.value = 'Произошла ошибка, попробуйте снова.';
+    alertMessage.value = 'Ошибка при сохранении данных.';
     showAlert.value = true;
+    console.error(error);
   }
 };
 </script>
@@ -122,7 +148,7 @@ const registerOrUpdateUser = async () => {
           <input v-model="email" type="email" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-red-200" required />
         </div>
 
-        <div class="mb-4">
+        <div class="mb-4" v-if="!isAdmin">
           <label class="block text-gray-700">Телефон</label>
           <input v-model="phone" type="tel" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-red-200" />
         </div>

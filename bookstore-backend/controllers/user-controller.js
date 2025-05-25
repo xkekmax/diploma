@@ -20,7 +20,7 @@ class UserController {
         // Если пользователь не найден в таблице customers, проверяем таблицу admins
         if (resultCustomers.rows.length === 0) {
           const queryAdmins = `
-            SELECT 'admin' AS role_name, a.login, a.firstname_admin, a.surname_admin
+            SELECT a.id_admin, a.login, a.firstname_admin, a.surname_admin, 'admin' AS role_name
             FROM public.admins a
             WHERE a.login = $1 AND a.password = $2
           `;
@@ -36,9 +36,11 @@ class UserController {
           return res.status(200).json({
             message: 'Авторизация успешна',
             user: {
-              id_customer: 'admin',
-              name: admin.firstname_admin, 
-              role: admin.role_name
+              id_admin: admin.id_admin,
+              name: admin.firstname_admin,
+              role: admin.role_name,
+              is_admin: true,
+              login: admin.login
             }
           });
         }
@@ -129,17 +131,17 @@ class UserController {
       }
     }   
 
-    async getAdminByLogin(req, res) {
+    async getAdminById(req, res) {
       try {
-        const login = req.params.login;
+        const id = req.params.id;
 
         const result = await db.query(`
           SELECT login, firstname_admin, surname_admin, patronymic_admin, 
                 TO_CHAR(date_of_birthday, 'YYYY-MM-DD') as date_of_birthday,
                 email, 'admin' AS role_name
           FROM public.admins
-          WHERE login = $1
-        `, [login]);
+          WHERE id_admin = $1
+        `, [id]);
 
         if (result.rows.length === 0) {
           return res.status(404).json({ message: 'Админ не найден' });
@@ -149,6 +151,45 @@ class UserController {
       } catch (error) {
         console.error('Ошибка при получении админа:', error);
         res.status(500).json({ message: 'Ошибка сервера' });
+      }
+    }
+
+    async updateAdmin(req, res) {
+      try {
+        const id = req.params.id;
+        const {
+          surname_admin,
+          firstname_admin,
+          patronymic_admin,
+          date_of_birthday,
+          email
+        } = req.body;
+
+        const query = `
+          UPDATE public.admins
+          SET 
+            surname_admin = $1,
+            firstname_admin = $2,
+            patronymic_admin = $3,
+            date_of_birthday = $4,
+            email = $5
+          WHERE id_admin = $6
+        `;
+
+        const values = [
+          surname_admin,
+          firstname_admin,
+          patronymic_admin || null,
+          date_of_birthday,
+          email,
+          id
+        ];
+
+        await db.query(query, values);
+        res.status(200).json({ message: 'Данные администратора обновлены' });
+      } catch (error) {
+        console.error('Ошибка при обновлении администратора:', error);
+        res.status(500).json({ message: 'Ошибка сервера', error });
       }
     }
 

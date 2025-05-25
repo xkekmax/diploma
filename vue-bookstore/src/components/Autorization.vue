@@ -22,16 +22,21 @@ const autorizationUser = async () => {
     const response = await axios.post('http://localhost:8080/witch/autorization', userData);
     const user = response.data.user;
 
-    if (!user || (!user.id_customer && user.id_customer !== 'admin')) {
+    if (!user || (!user.id_customer && !user.is_admin)) {
       alertMessage.value = 'Неверный логин или пароль';
       showAlert.value = true;
       return;
     }
 
-    const isAdmin = user.id_customer === 'admin';
-    localStorage.setItem('user_id', isAdmin ? 'admin' : user.id_customer);
+    const isAdmin = user.is_admin === true;
+    if (isAdmin) {
+      localStorage.setItem('user_id', user.id_admin);
+    } else {
+      localStorage.setItem('user_id', user.id_customer);
+    }
     localStorage.setItem('user_name', user.name);
     localStorage.setItem('user_role', isAdmin ? 'admin' : 'user');
+    localStorage.setItem('login', response.data.user.login);
 
     setUserName(user.name);
     setUserRole(isAdmin ? 'admin' : 'user');

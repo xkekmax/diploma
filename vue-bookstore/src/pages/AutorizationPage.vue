@@ -17,10 +17,19 @@ const orders = ref([]);
 
 const fetchUserData = async () => {
   const userId = localStorage.getItem('user_id');
+  const userRole = localStorage.getItem('user_role');
+
   if (!userId) return;
 
   try {
-    const { data } = await axios.get(`http://localhost:8080/witch/user/${userId}`);
+    let data;
+    if (userRole === 'admin') {
+      const response = await axios.get(`http://localhost:8080/witch/admin/${userId}`);
+      data = response.data;
+    } else {
+      const response = await axios.get(`http://localhost:8080/witch/user/${userId}`);
+      data = response.data;
+    }
 
     if (data.date_of_birthday) {
       const date = new Date(data.date_of_birthday);
