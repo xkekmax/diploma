@@ -2,7 +2,7 @@
 import { inject } from 'vue'
 import BookItem from './BookItem.vue'
 
-const { cart, removeFromCart } = inject('cart')
+const { cart, removeFromCart, deleteBookFromCart } = inject('cart');
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const { cart, removeFromCart } = inject('cart')
       :price="item.price"
       :image-url="item.cover_art"
       :quantity="item.quantity"
-      @onClickRemove="(codeBook) => removeFromCart(codeBook)"
+      @onClickRemove="(codeBook) => deleteBookFromCart(codeBook)"
       @increase="(codeBook) => {
         const book = cart.find(b => b.code_book === codeBook)
         if (book) book.quantity++

@@ -5,7 +5,9 @@ import axios from 'axios';
 import BookPageItem from '../components/BookPageItem.vue';
 import AlertMessage from '../components/AlertMessage.vue';
 
-const showAlert = ref(false);
+const showDeleteConfirm = ref(false);
+const showInfoAlert = ref(false);
+const alertMessage = ref('');
 
 const props = defineProps({
   id: String
@@ -45,7 +47,8 @@ const toggleFavorite = async () => {
 
   const idCustomer = localStorage.getItem('user_id');
   if (!idCustomer) {
-    alert('Пользователь не авторизован');
+    alertMessage.value = 'Войдите в систему, чтобы добавлять книги в закладки';
+    showInfoAlert.value = true;
     return;
   }
 
@@ -108,12 +111,10 @@ const goToEditPage = () => {
   }
 };
 
-// Загружаем при первом монтировании
 onMounted(() => {
   loadBook(props.id);
 });
 
-// Также загружаем при изменении id (например, переход на другую книгу)
 watch(() => props.id, (newId) => {
   loadBook(newId);
 });
@@ -145,15 +146,24 @@ watch(() => props.id, (newId) => {
       :onClickFavorite="toggleFavorite"
       :onAuthorClick="goToAuthorBooks"
       :onEditClick="goToEditPage"
-      @requestDelete="showAlert = true"/>
+      @requestDelete="showDeleteConfirm = true"
+    />
 
-      <AlertMessage
-        v-if="showAlert"
-        :message="`Вы уверены, что хотите удалить книгу '${bookData?.book_name}'?`"
-        :isDelete="true"
-        @confirm="deleteBook"
-        @cancel="showAlert = false"
-      />
+    <!-- Удаление книги -->
+    <AlertMessage
+      v-if="showDeleteConfirm"
+      :message="`Вы уверены, что хотите удалить книгу '${bookData?.book_name}'?`"
+      :isDelete="true"
+      @confirm="deleteBook"
+      @cancel="showDeleteConfirm = false"
+    />
+
+    <!-- Информационное сообщение -->
+    <AlertMessage
+      v-if="showInfoAlert"
+      :message="alertMessage"
+      :is-delete="false"
+      @close="showInfoAlert = false"
+    />
   </div>
 </template>
-

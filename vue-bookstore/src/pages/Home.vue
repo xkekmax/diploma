@@ -5,6 +5,10 @@ import axios from 'axios';
 import BookList from '../components/BookList.vue'
 import Swiper from '@/components/Swiper.vue';
 import InfoBlock from '../components/InfoBlock.vue';
+import AlertMessage from '@/components/AlertMessage.vue';
+
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const items = ref([])
 
@@ -56,7 +60,8 @@ const addFavorite = async (item) => {
   try {
     const idCustomer = localStorage.getItem('user_id');
     if (!idCustomer) {
-      alert('Пользователь не авторизован');
+      alertMessage.value = 'Войдите в систему, чтобы добавлять книги в закладки';
+      showAlert.value = true;
       return;
     }
 
@@ -121,6 +126,13 @@ const fetchItems = async () => {
     }));
     // После загрузки книг, загружаем избранные
     await fetchFavorites();
+
+    // Обновляем isAdded согласно корзине:
+    items.value = items.value.map((item) => ({
+      ...item,
+      isAdded: cart.value.some((cartItem) => cartItem.code_book === item.code_book)
+    }));
+
   } catch (err) {
     console.log(err);
   }
@@ -154,6 +166,13 @@ watch(cart, () => {
 <template>
 
   <Swiper/>
+
+  <AlertMessage
+    v-if="showAlert"
+    :message="alertMessage"
+    :is-delete="false"
+    @close="showAlert = false"
+  />
 
   <div class="flex justify-between items-center mb-8 text-sm">
       <h2 class="text-3xl font-bold text-orange-900">Все книги</h2>

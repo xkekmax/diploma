@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { ref, onMounted, inject } from 'vue'
+import { ref, onMounted, inject, watch } from 'vue'
 import axios from 'axios';
 import { useCartSync } from '../useCart';
 
@@ -22,6 +22,13 @@ const onClickPlus = (item) => {
 
   localStorage.setItem('cart', JSON.stringify(cart.value));
 };
+
+watch(cart, () => {
+  favorites.value = favorites.value.map(item => ({
+    ...item,
+    isAdded: cart.value.some(cartItem => cartItem.code_book === item.code_book),
+  }));
+}, { deep: true });
 
 onMounted(async () => {
   loadCartFromLocalStorage();

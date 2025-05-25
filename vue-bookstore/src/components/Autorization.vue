@@ -2,13 +2,19 @@
 import { ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import AlertMessage from '../components/AlertMessage.vue';
 
 const login = ref('');
 const password = ref('');
 const router = useRouter();
+
 const setUserAuthorized = inject('setUserAuthorized');
 const setUserName = inject('setUserName');
 const setUserRole = inject('setUserRole');
+
+// Для отображения алертов
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const autorizationUser = async () => {
   try {
@@ -17,12 +23,8 @@ const autorizationUser = async () => {
     const user = response.data.user;
 
     if (!user || (!user.id_customer && user.id_customer !== 'admin')) {
-      alert('Неверный логин или пароль');
-      return;
-    }
-
-    if (!user || (!user.id_customer && user.id_customer !== 'admin')) {
-      alert('Неверный логин или пароль');
+      alertMessage.value = 'Неверный логин или пароль';
+      showAlert.value = true;
       return;
     }
 
@@ -30,16 +32,17 @@ const autorizationUser = async () => {
     localStorage.setItem('user_id', isAdmin ? 'admin' : user.id_customer);
     localStorage.setItem('user_name', user.name);
     localStorage.setItem('user_role', isAdmin ? 'admin' : 'user');
+
     setUserName(user.name);
     setUserRole(isAdmin ? 'admin' : 'user');
     setUserAuthorized(true);
 
     console.warn('Авторизация успешна!');
     router.push('/');
-
   } catch (error) {
     console.error('Ошибка авторизации:', error);
-    alert('Ошибка авторизации, попробуйте снова.');
+    alertMessage.value = 'Ошибка авторизации, попробуйте снова.';
+    showAlert.value = true;
   }
 };
 </script>
@@ -69,4 +72,12 @@ const autorizationUser = async () => {
       </p>
     </div>
   </div>
+
+  <!-- AlertMessage -->
+  <AlertMessage
+    v-if="showAlert"
+    :message="alertMessage"
+    :is-delete="false"
+    @close="showAlert = false"
+  />
 </template>

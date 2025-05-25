@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ref, inject, computed } from 'vue';
 import BookListItem from './BookListItem.vue';
 import InfoBlock from './InfoBlock.vue';
+import AlertMessage from './AlertMessage.vue';
 
 const props = defineProps({
   price: Number,
@@ -98,10 +99,11 @@ const buttonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
           <b>{{ totalPrice }} руб.</b>
         </div>
 
-        <!-- Предупреждение для неавторизованного пользователя -->
-        <div v-if="showAlert" class="text-red-500">
-          <p>Пожалуйста, авторизуйтесь или зарегистрируйтесь, чтобы оформить заказ.</p>
-        </div>
+        <AlertMessage
+          v-if="showAlert"
+          :message="'Войдите в систему, чтобы оформить заказ'"
+          @close="showAlert = false"
+        />
 
         <button
           :disabled="buttonDisabled"

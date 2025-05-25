@@ -52,6 +52,14 @@ const removeFromCart = (codeBook) => {
   }
 };
 
+const deleteBookFromCart = (codeBook) => {
+  const index = cart.value.findIndex(i => i.code_book === codeBook);
+  if (index !== -1) {
+    cart.value[index].isAdded = false;
+    cart.value.splice(index, 1);
+  }
+};
+
 watch(cart, () => {
   localStorage.setItem('cart', JSON.stringify(cart.value));
 }, { deep: true });
@@ -60,6 +68,7 @@ provide('cart', {
   cart,
   addToCart,
   removeFromCart,
+  deleteBookFromCart,
   closeDrawer,
   openDrawer
 });

@@ -1,6 +1,9 @@
 <script setup>
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineProps, inject } from 'vue';
 import axios from 'axios';
+import AlertMessage from './AlertMessage.vue';
+
+const setUserName = inject('setUserName');
 
 const props = defineProps({
   userData: Object,
@@ -15,6 +18,14 @@ const email = ref('');
 const phone = ref('');
 const login = ref('');
 const password = ref('');
+
+// Alert message state
+const showAlert = ref(false);
+const alertMessage = ref('');
+
+const closeAlert = () => {
+  showAlert.value = false;
+};
 
 watch(
   () => props.userData,
@@ -49,14 +60,21 @@ const registerOrUpdateUser = async () => {
     if (props.editMode) {
       const userId = localStorage.getItem('user_id');
       await axios.put(`http://localhost:8080/witch/user/${userId}`, userData);
-      alert('Данные успешно обновлены!');
+      alertMessage.value = 'Данные успешно обновлены!';
+      if (setUserName) {
+        setUserName(firstName.value);
+      }
     } else {
       await axios.post('http://localhost:8080/witch/register', userData);
-      alert('Регистрация успешна!');
+      alertMessage.value = 'Регистрация успешна!';
     }
+
+    showAlert.value = true;
+
   } catch (error) {
     console.error('Ошибка:', error);
-    alert('Произошла ошибка, попробуйте снова.');
+    alertMessage.value = 'Произошла ошибка, попробуйте снова.';
+    showAlert.value = true;
   }
 };
 </script>
@@ -119,5 +137,11 @@ const registerOrUpdateUser = async () => {
         <a @click="$emit('goToLogin')" class="text-orange-600 hover:underline cursor-pointer">Войти</a>
       </p>
     </div>
+
+    <AlertMessage
+      v-if="showAlert"
+      :message="alertMessage"
+      @close="closeAlert"
+    />
   </div>
 </template>

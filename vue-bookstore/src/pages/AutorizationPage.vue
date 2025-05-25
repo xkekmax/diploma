@@ -67,10 +67,6 @@ onMounted(init);
 watch(() => route.fullPath, () => {
   init();
 });
-
-const getTotalQuantity = (order) => {
-  return order.books.reduce((sum, book) => sum + (book.quantity || 1), 0);
-};
 </script>
 
 <template>
