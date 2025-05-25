@@ -1,12 +1,19 @@
 <script setup>
 import { inject } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const onChangeSearchInput = inject('onChangeSearchInput');
 const searchQuery = inject('searchQuery');
+
+// Отправка формы: переход на главную с параметром title
+const onSubmit = () => {
+  router.push({ name: 'Home', query: { title: searchQuery.value } });
+};
 </script>
 
 <template>
-  <form @submit.prevent class="w-5/12">
+  <form @submit.prevent="onSubmit" class="w-5/12">
     <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Search</label>
     <div class="relative">
       <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">

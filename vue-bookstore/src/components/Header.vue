@@ -100,8 +100,11 @@ const goToOrders = () => {
         <span>Добавить</span>
       </li>
 
-      <!-- Кнопка для обычного пользователя (закладки) -->
-      <li v-else @click="goToFavorites" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400">
+      <li
+        v-if="isAuthorized && userRole !== 'admin'"
+        @click="goToFavorites"
+        class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400"
+      >
         <img src="/heart.svg" alt="Favorites" class="w-7"/>
         <span>Закладки</span>
       </li>

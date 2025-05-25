@@ -15,7 +15,7 @@ const props = defineProps({
 
 const bookData = ref(null);
 
-const { cart, addToCart, removeFromCart } = inject('cart');
+const { cart, addToCart, deleteBookFromCart } = inject('cart');
 const searchQuery = inject('searchQuery');
 const router = useRouter();
 
@@ -36,7 +36,7 @@ const toggleAddToCart = () => {
   if (!bookData.value) return;
 
   if (isAdded.value) {
-    removeFromCart(bookData.value.code_book);
+    deleteBookFromCart(bookData.value.code_book);
   } else {
     addToCart(bookData.value);
   }

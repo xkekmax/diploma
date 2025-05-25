@@ -1,11 +1,14 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import { onMounted, ref, watch, inject } from 'vue';
+import { useRoute } from 'vue-router';
 import axios from 'axios';
 import BookList from '../components/BookList.vue'
 import Swiper from '@/components/Swiper.vue';
 import InfoBlock from '../components/InfoBlock.vue';
 import AlertMessage from '@/components/AlertMessage.vue';
+
+const route = useRoute();
 
 const userRole = ref(localStorage.getItem('user_role') || 'user');
 
@@ -163,6 +166,24 @@ watch(cart, () => {
   }));
 }, { deep: true });
 
+watch(() => route.query.title, (newTitle) => {
+  if (newTitle) {
+    searchQuery.value = newTitle;
+    fetchItems();
+  }
+});
+
+onMounted(() => {
+  const title = route.query.title;
+  if (title) {
+    searchQuery.value = title;
+    fetchItems();
+  } else {
+    fetchItems();
+  }
+
+  fetchFavorites();
+});
 </script>
 
 <template>
