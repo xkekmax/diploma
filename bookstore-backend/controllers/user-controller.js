@@ -20,7 +20,7 @@ class UserController {
         // Если пользователь не найден в таблице customers, проверяем таблицу admins
         if (resultCustomers.rows.length === 0) {
           const queryAdmins = `
-            SELECT 'admin' AS role_name, a.login
+            SELECT 'admin' AS role_name, a.login, a.firstname_admin, a.surname_admin
             FROM public.admins a
             WHERE a.login = $1 AND a.password = $2
           `;
@@ -32,12 +32,13 @@ class UserController {
 
           // Если найден администратор
           const admin = resultAdmins.rows[0];
+
           return res.status(200).json({
             message: 'Авторизация успешна',
             user: {
-              id_customer: 'admin', // Для админа ставим специальное значение (например, 'admin')
-              name: admin.login, // Возвращаем логин администратора
-              role: admin.role_name  // Возвращаем роль "admin"
+              id_customer: 'admin',
+              name: admin.firstname_admin, 
+              role: admin.role_name
             }
           });
         }
@@ -126,7 +127,30 @@ class UserController {
         console.error('Ошибка при получении данных пользователя:', error);
         res.status(500).json({ message: 'Ошибка при получении данных пользователя', error });
       }
-    }    
+    }   
+
+    async getAdminByLogin(req, res) {
+      try {
+        const login = req.params.login;
+
+        const result = await db.query(`
+          SELECT login, firstname_admin, surname_admin, patronymic_admin, 
+                TO_CHAR(date_of_birthday, 'YYYY-MM-DD') as date_of_birthday,
+                email, 'admin' AS role_name
+          FROM public.admins
+          WHERE login = $1
+        `, [login]);
+
+        if (result.rows.length === 0) {
+          return res.status(404).json({ message: 'Админ не найден' });
+        }
+
+        return res.status(200).json(result.rows[0]);
+      } catch (error) {
+        console.error('Ошибка при получении админа:', error);
+        res.status(500).json({ message: 'Ошибка сервера' });
+      }
+    }
 
     async updateUser(req, res) {
       try {

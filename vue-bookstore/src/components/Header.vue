@@ -8,10 +8,10 @@ const emit = defineEmits(['openDrawer']);
 const router = useRouter();
 const isAuthorized = inject('isAuthorized');
 const userName = inject('userName');
-const userRole = inject('userRole');  // Получаем роль пользователя
+const userRole = inject('userRole');
 const setUserAuthorized = inject('setUserAuthorized');
 const setUserName = inject('setUserName');
-const setUserRole = inject('setUserRole');  // Функция для обновления роли пользователя
+const setUserRole = inject('setUserRole');
 
 const showDropdown = ref(false);
 let hideTimeout;
@@ -30,11 +30,11 @@ const onMouseLeave = () => {
 const logout = () => {
   localStorage.removeItem('user_id');
   localStorage.removeItem('user_name');
-  localStorage.removeItem('user_role');  // Удаляем роль пользователя из localStorage
+  localStorage.removeItem('user_role');
   setUserAuthorized(false);
   setUserName('');
-  setUserRole('');  // Сброс роли пользователя
-  window.location.reload(); // Перезагрузка страницы
+  setUserRole('');
+  window.location.reload(); 
 };
 
 const editProfile = () => {
@@ -56,7 +56,7 @@ const editProfile = () => {
 };
 
 const reloadHome = () => {
-  window.location.href = '/'; // Принудительная перезагрузка на главную
+  window.location.href = '/';
 };
 
 const goToFavorites = () => {
@@ -71,7 +71,7 @@ const goToOrders = () => {
   if (router.currentRoute.value.name === 'Profile' && router.currentRoute.value.query.edit !== 'true') {
     window.location.reload();
   } else {
-    router.push({ name: 'Profile' }); // Без query — это и есть страница заказов
+    router.push({ name: 'Profile' });
   }
 };
 </script>

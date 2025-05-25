@@ -20,6 +20,8 @@ const upload = multer({ storage });
 router.post('/register', UserController.addUser);
 router.post('/autorization', UserController.autorizeUser);
 
+router.get('/admin/:login', UserController.getAdminByLogin);
+
 router.get('/user/:id', UserController.getUserById);
 router.put('/user/:id', UserController.updateUser);
 router.get('/orders/:id', UserController.getUserOrders);
