@@ -4,8 +4,12 @@ import Book from './Book.vue'
 defineProps({
   items: Array,
   isFavorites: Boolean,
-  showQuantity: Boolean
-})
+  showQuantity: Boolean,
+  userRole: {
+    type: String,
+    default: 'user'
+  }
+});
 
 const emit = defineEmits(['addFavorite', 'addToCart'])
 </script>
@@ -26,6 +30,7 @@ const emit = defineEmits(['addFavorite', 'addToCart'])
       :onClickAdd="isFavorites ? null : () => emit('addToCart', item)"
       :onClickFavorite="isFavorites ? null : () => emit('addFavorite', item)"
       :show-quantity="showQuantity"
+      :user-role="userRole"
     />
   </div>
 </template>

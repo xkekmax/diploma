@@ -7,6 +7,8 @@ import Swiper from '@/components/Swiper.vue';
 import InfoBlock from '../components/InfoBlock.vue';
 import AlertMessage from '@/components/AlertMessage.vue';
 
+const userRole = ref(localStorage.getItem('user_role') || 'user');
+
 const showAlert = ref(false);
 const alertMessage = ref('');
 
@@ -192,7 +194,7 @@ watch(cart, () => {
       image-url="/bookmark.png"/>
     </div>
 
-    <BookList :items="items" @add-favorite="addFavorite" @add-to-cart="onClickPlus" class="mx-8"/>
+    <BookList :items="items" :user-role="userRole" @add-favorite="addFavorite" @add-to-cart="onClickPlus" class="mx-8"/>
   </div>
 
 </template>

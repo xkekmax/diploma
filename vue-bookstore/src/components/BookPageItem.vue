@@ -108,18 +108,30 @@ defineProps({
               <h2 class="ml-2 text-gray-600 ">Бонусы за покупку</h2>
             </div>
           </div>
-          <div class="flex justify-between mt-2" id="description">
-            <button
-              @click="onClickAdd"
-              class="text-white bg-red-400 hover:bg-red-500 w-max h-max text-xl focus:outline-none font-medium rounded-lg px-12 py-2"
+          <div
+              id="description"
+              class="flex justify-between mt-2 w-[220px] items-center"
+              :class="userRole === 'admin' ? 'h-[0px]' : 'h-[60px]'"
+            >
+              <button
+                @click="onClickAdd"
+                :class="[
+                  'text-white bg-red-400 hover:bg-red-500 text-xl font-medium rounded-lg px-12 py-2',
+                  userRole === 'admin' ? 'hidden' : ''
+                ]"
               >
-              {{ isAdded ? 'Убрать' : 'Купить' }}
-            </button>
-            <img
-              @click="onClickFavorite"
-              class="cursor-pointer mx-4"
-              :src="isFavorite ? '/like-4.svg' : '/like-3.svg'" alt="Plus">
-          </div>
+                {{ isAdded ? 'Убрать' : 'Купить' }}
+              </button>
+              <img
+                @click="onClickFavorite"
+                :class="[
+                  'cursor-pointer mx-4 w-8 h-8',
+                  userRole === 'admin' ? 'hidden' : ''
+                ]"
+                :src="isFavorite ? '/like-4.svg' : '/like-3.svg'"
+                alt="Like"
+              >
+            </div>
         </div>
       </div>
 

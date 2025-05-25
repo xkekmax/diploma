@@ -15,7 +15,11 @@ const props = defineProps({
   onClickAdd: Function,
   onClickFavorite: Function,
   quantity: Number,
-  showQuantity: Boolean
+  showQuantity: Boolean,
+  userRole: {
+    type: String,
+    default: 'user'
+  }
 });
 
 const handleFavoriteClick = (event) => {
@@ -49,7 +53,15 @@ const handleAuthorClick = (event) => {
                    items-center justify-center select-none">
         {{ quantity }}
       </div>
-      <img v-if="onClickFavorite" @click="handleFavoriteClick" :src="isFavorite ? '/like-4.svg' : '/like-3.svg'" alt="Like" class="w-7"/>
+
+      <img
+        v-if="onClickFavorite && userRole !== 'admin'"
+        @click="handleFavoriteClick"
+        :src="isFavorite ? '/like-4.svg' : '/like-3.svg'"
+        alt="Like"
+        class="w-7"
+      />
+
       <img :src="imageUrl" :alt="title" class="mx-auto w-8/12" />
 
       <div class="flex justify-between mt-4 px-4">
@@ -68,7 +80,7 @@ const handleAuthorClick = (event) => {
         </div>
 
         <img
-          v-if="onClickAdd"
+          v-if="onClickAdd && userRole !== 'admin'"
           @click="handleAddClick"
           :src="!isAdded ? '/plus.svg' : '/checked.svg'"
           alt="Plus"

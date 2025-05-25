@@ -34,7 +34,7 @@ const logout = () => {
   setUserAuthorized(false);
   setUserName('');
   setUserRole('');
-  window.location.reload(); 
+  window.location.reload();
 };
 
 const editProfile = () => {
@@ -89,7 +89,7 @@ const goToOrders = () => {
     <Search />
 
     <ul class="flex items-center gap-8 pl-4">
-      <li @click="() => emit('openDrawer')" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400 w-32">
+      <li v-if="userRole !== 'admin'" @click="() => emit('openDrawer')" class="flex items-center cursor-pointer gap-3 text-gray-500 hover:text-red-400 w-32">
         <img src="/cart.svg" alt="Cart" class="w-7"/>
         <b>{{ price }} руб.</b>
       </li>
@@ -121,7 +121,7 @@ const goToOrders = () => {
           v-show="showDropdown"
           class="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-md z-10 w-40 transition-opacity duration-200"
         >
-          <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @click="goToOrders">Заказы</li>
+          <li v-if="userRole !== 'admin'" class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @click="goToOrders">Заказы</li>
           <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @click="editProfile">Редактировать</li>
           <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500" @click="logout">Выйти</li>
         </ul>
