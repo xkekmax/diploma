@@ -1,6 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import { defineProps, inject } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const props = defineProps({
   code: Number,
@@ -31,8 +33,9 @@ const searchQuery = inject('searchQuery');
 
 const handleAuthorClick = (event) => {
   event.preventDefault();
-  if (searchQuery) {
+  if (searchQuery && props.author) {
     searchQuery.value = props.author;
+    router.push('/');
   }
 };
 </script>
