@@ -182,6 +182,8 @@ class BookController {
                 if (typeof value !== 'string' || !value.trim()) return 1;
 
                 const trimmed = value.trim();
+
+                // Попробуем найти существующую запись
                 const existing = await db.query(
                     `SELECT ${idColumn} FROM ${table} WHERE ${column} = $1`,
                     [trimmed]
@@ -191,9 +193,14 @@ class BookController {
                     return existing.rows[0][idColumn];
                 }
 
+                // Получаем максимальный id в таблице
+                const maxResult = await db.query(`SELECT MAX(${idColumn}) AS max_id FROM ${table}`);
+                const nextId = (maxResult.rows[0].max_id || 0) + 1;
+
+                // Вставляем новую запись с этим id
                 const inserted = await db.query(
-                    `INSERT INTO ${table} (${column}) VALUES ($1) RETURNING ${idColumn}`,
-                    [trimmed]
+                    `INSERT INTO ${table} (${idColumn}, ${column}) VALUES ($1, $2) RETURNING ${idColumn}`,
+                    [nextId, trimmed]
                 );
 
                 return inserted.rows[0][idColumn];
@@ -263,54 +270,57 @@ class BookController {
     }
 
     async updateBook(req, res) {
-        try {
-            const { id } = req.params;
-            const {
-                book_name,
-                name_author,
-                price,
-                publishing_name,
-                series_name,
-                surname_translator,
-                surname_illustrator,
-                cover_name,
-                page_count,
-                ISBN,
-                section_name,
-                book_size,
-                book_weight,
-                description
-            } = req.body;
+    try {
+        const { id } = req.params;
+        const {
+            book_name,
+            name_author,
+            price,
+            publishing_name,
+            series_name,
+            surname_translator,
+            surname_illustrator,
+            cover_name,
+            page_count,
+            ISBN,
+            section_name,
+            book_size,
+            book_weight,
+            description
+        } = req.body;
 
-            // Получаем имя файла
-            let cover_art = req.body.cover_art || '';
+        let cover_art = req.body.cover_art || '';
+        let year_of_publication = `${req.body.year_of_publication}-01-01`; // YYYY-MM-DD
 
-            let year_of_publication = `${req.body.year_of_publication}-01-01`; // YYYY-MM-DD
+        if (cover_art) {
+            cover_art = `..\\..\\books\\${cover_art}`;
+        }
 
-            if (cover_art) {
-                cover_art = `..\\..\\books\\${cover_art}`;
+        // Обновлённый getOrCreateId
+        const getOrCreateId = async (table, column, value, idColumn) => {
+            if (typeof value !== 'string' || !value.trim()) return 1;
+
+            const trimmed = value.trim();
+
+            const existing = await db.query(
+                `SELECT ${idColumn} FROM ${table} WHERE ${column} = $1`,
+                [trimmed]
+            );
+
+            if (existing.rows.length > 0) {
+                return existing.rows[0][idColumn];
             }
 
-            const getOrCreateId = async (table, column, value, idColumn) => {
-                if (typeof value !== 'string' || !value.trim()) return 1;
+            const maxResult = await db.query(`SELECT MAX(${idColumn}) AS max_id FROM ${table}`);
+            const nextId = (maxResult.rows[0].max_id || 0) + 1;
 
-                const trimmed = value.trim();
-                const existing = await db.query(
-                    `SELECT ${idColumn} FROM ${table} WHERE ${column} = $1`,
-                    [trimmed]
-                );
+            const inserted = await db.query(
+                `INSERT INTO ${table} (${idColumn}, ${column}) VALUES ($1, $2) RETURNING ${idColumn}`,
+                [nextId, trimmed]
+            );
 
-                if (existing.rows.length > 0) {
-                    return existing.rows[0][idColumn];
-                }
-
-                const inserted = await db.query(
-                    `INSERT INTO ${table} (${column}) VALUES ($1) RETURNING ${idColumn}`,
-                    [trimmed]
-                );
-
-                return inserted.rows[0][idColumn];
-            };
+            return inserted.rows[0][idColumn];
+        };
 
             const id_author = await getOrCreateId('authors', 'name_author', name_author, 'id_author');
             const id_series = await getOrCreateId('series', 'series_name', series_name, 'id_series');
@@ -321,7 +331,6 @@ class BookController {
             const id_cover = cover_name;
             const id_section = section_name;
 
-            // Обновляем запись в базе
             const result = await db.query(
                 `UPDATE books SET
                     book_name = $1, id_author = $2, price = $3, cover_art = $4, id_publishing = $5,
@@ -338,7 +347,7 @@ class BookController {
             res.status(200).json({ message: 'Книга обновлена', book: result.rows[0] });
         } catch (error) {
             console.error('Ошибка при SQL-запросе:', error.message);
-            console.error('Стек ошибки:', error.stack); // Вывод стека ошибки для отладки
+            console.error('Стек ошибки:', error.stack);
             res.status(500).json({ message: 'Ошибка в SQL', details: error.message });
         }
     }

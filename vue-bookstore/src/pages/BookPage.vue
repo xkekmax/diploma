@@ -99,8 +99,11 @@ const deleteBook = async () => {
     router.push('/');
   } catch (error) {
     console.error('Ошибка при удалении книги:', error);
+    console.error('Ответ сервера:', error.response?.data);
+    console.error('Код ответа:', error.response?.status);
   }
 };
+
 
 const goToEditPage = () => {
   if (bookData.value) {
