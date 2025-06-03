@@ -54,7 +54,7 @@ const registerOrUpdateUser = async () => {
   try {
     if (!props.editMode) {
       if (password.value !== confirmPassword.value) {
-        alertMessage.value = 'Пароль и повтор пароля не совпадают.';
+        alertMessage.value = 'Пароли не совпадают.';
         showAlert.value = true;
         return;
       }
