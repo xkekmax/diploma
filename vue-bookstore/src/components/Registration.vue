@@ -5,6 +5,9 @@ import AlertMessage from './AlertMessage.vue';
 
 const setUserName = inject('setUserName');
 
+const confirmPassword = ref('');
+const agreeToTerms = ref(false);
+
 const props = defineProps({
   userData: Object,
   editMode: Boolean
@@ -49,6 +52,19 @@ watch(
 
 const registerOrUpdateUser = async () => {
   try {
+    if (!props.editMode) {
+      if (password.value !== confirmPassword.value) {
+        alertMessage.value = 'Пароль и повтор пароля не совпадают.';
+        showAlert.value = true;
+        return;
+      }
+      if (!agreeToTerms.value) {
+        alertMessage.value = 'Вы должны дать согласие на обработку персональных данных.';
+        showAlert.value = true;
+        return;
+      }
+    }
+
     const userId = localStorage.getItem('user_id');
 
     if (props.editMode) {
@@ -79,7 +95,7 @@ const registerOrUpdateUser = async () => {
       if (setUserName) setUserName(firstName.value);
       showAlert.value = true;
     } else {
-      // регистрация покупателя — оставляем без изменений
+      // регистрация нового пользователя
       const userData = {
         surname_customer: lastName.value,
         firstname_customer: firstName.value,
@@ -89,12 +105,20 @@ const registerOrUpdateUser = async () => {
         password: password.value,
         email: email.value,
         phone: phone.value || null,
-        id_role: 2 // например, роль покупателя
+        id_role: 2 // покупатель
       };
 
-      await axios.post('http://localhost:8080/witch/register', userData);
-
-      alertMessage.value = 'Регистрация прошла успешно!';
+      try {
+        await axios.post('http://localhost:8080/witch/register', userData);
+        alertMessage.value = 'Регистрация прошла успешно!';
+      } catch (err) {
+        if (err.response && err.response.status === 409) {
+          alertMessage.value = err.response.data.message;
+        } else {
+          alertMessage.value = 'Ошибка при сохранении данных.';
+          console.error(err);
+        }
+      }
       showAlert.value = true;
     }
   } catch (error) {
@@ -143,6 +167,16 @@ const registerOrUpdateUser = async () => {
           <input v-model="password" type="password" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-red-200" required />
         </div>
 
+        <div class="mb-4" v-if="!editMode">
+          <label class="block text-gray-700">Повторите пароль</label>
+          <input
+            v-model="confirmPassword"
+            type="password"
+            class="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-red-200"
+            required
+          />
+        </div>
+
         <div class="mb-4">
           <label class="block text-gray-700">Почта</label>
           <input v-model="email" type="email" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-red-200" required />
@@ -151,6 +185,18 @@ const registerOrUpdateUser = async () => {
         <div class="mb-4" v-if="!isAdmin">
           <label class="block text-gray-700">Телефон</label>
           <input v-model="phone" type="tel" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-red-200" />
+        </div>
+
+        <div class="mb-4 flex items-start space-x-2" v-if="!editMode">
+          <input
+            id="agree"
+            type="checkbox"
+            v-model="agreeToTerms"
+            class="mt-1"
+          />
+          <label for="agree" class="text-gray-700 text-sm cursor-pointer">
+            Я даю согласие на обработку персональных данных
+          </label>
         </div>
 
         <button type="submit" class="w-full bg-red-400 text-white py-2 px-4 rounded-md hover:bg-red-500 transition mt-8">

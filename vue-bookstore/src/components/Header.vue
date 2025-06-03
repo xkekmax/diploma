@@ -34,7 +34,7 @@ const logout = () => {
   setUserAuthorized(false);
   setUserName('');
   setUserRole('');
-  window.location.reload();
+  router.push('/');
 };
 
 const editProfile = () => {
